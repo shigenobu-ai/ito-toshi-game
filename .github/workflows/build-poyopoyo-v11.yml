@@ -1,0 +1,65 @@
+name: Build Poyopoyo v11
+'on':
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/build-poyopoyo-v11.yml
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build v11 from v10 with uploaded Poyona sheet
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          src=Path('poyopoyo-v10.html')
+          s=src.read_text()
+          s=s.replace('CHAIN PUZZLE · v10','CHAIN PUZZLE · v11')
+          # Replace embedded/broken sprite implementation with actual uploaded image sheet.
+          import re
+          s=re.sub(r'\.poyonaSprite\{.*?\}(?=\.poyonaSprite\.|\n</style>)','',s,flags=re.S)
+          # Remove old per-state sprite rules if present.
+          s=re.sub(r'\.poyonaSprite\.(normal|rotate|c1|c2|c3|c4|gameover)\{.*?\}','',s,flags=re.S)
+          css='''\n.poyonaSprite{position:absolute;inset:4px;z-index:1;overflow:hidden;border-radius:10px;background:#fff}\n.poyonaSprite:before{content:"";position:absolute;width:300%;height:650px;left:0;top:-108px;background-image:url("./assets/03A2A4E5-6EA6-4AAC-B0A4-3FC42A26A16E.png?v=20260826-1100");background-repeat:no-repeat;background-size:100% auto;transform-origin:0 0}\n.poyonaSprite.normal:before{left:0;top:-108px}\n.poyonaSprite.rotate:before{left:-100%;top:-108px}\n.poyonaSprite.c1:before{left:-200%;top:-108px}\n.poyonaSprite.c2:before{left:0;top:-285px}\n.poyonaSprite.c3:before{left:-100%;top:-285px}\n.poyonaSprite.c4:before{left:-200%;top:-285px}\n.poyonaSprite.wait:before{left:0;top:-460px}\n.poyonaSprite.gameover:before{left:-100%;top:-460px}\n.poyonaSprite.clear:before{left:-200%;top:-460px}\n.mascot.cheer .poyonaSprite{animation:poyocharBounce .48s ease}\n.mascot.magic .poyonaSprite{animation:poyocharMagic .62s ease}\n@keyframes poyocharBounce{45%{transform:translateY(-5px) scale(1.04)}}\n@keyframes poyocharMagic{35%{transform:translateY(-8px) scale(1.08) rotate(2deg)}70%{transform:translateY(-3px) scale(1.03)}}\n'''
+          s=s.replace('</style>',css+'\n</style>',1)
+          # Ensure the sprite node exists and has the correct base class.
+          s=s.replace('class="poyonaSprite normal"','class="poyonaSprite normal"',1)
+          # Replace sprite state handler with explicit states tied to gameplay.
+          if 'const sprite=document.getElementById(\'poyonaSprite\')' not in s:
+              s=s.replace("const scoreEl=document.getElementById('score')", "const sprite=document.getElementById('poyonaSprite');\nconst scoreEl=document.getElementById('score')",1)
+          # Make react choose pose by text/type without changing game logic.
+          old="function react(kind,text){talk.textContent=text;mascot.classList.remove('cheer','magic');void mascot.offsetWidth;if(kind)mascot.classList.add(kind);setTimeout(()=>mascot.classList.remove(kind),700)}"
+          new="function react(kind,text){talk.textContent=text;mascot.classList.remove('cheer','magic');if(sprite){let state='normal';if(text.includes('くる'))state='rotate';else if(text.includes('4れんさ')||text.includes('すご'))state='c4';else if(text.includes('3れんさ'))state='c3';else if(text.includes('2れんさ'))state='c2';else if(text.includes('やった'))state='c1';else if(text.includes('また'))state='gameover';sprite.className='poyonaSprite '+state}void mascot.offsetWidth;if(kind)mascot.classList.add(kind);setTimeout(()=>mascot.classList.remove(kind),700)}"
+          if old in s:
+              s=s.replace(old,new,1)
+          else:
+              # v10 may already have a sprite-aware react; replace the function body generically.
+              a=s.find('function react(')
+              b=s.find('function popChain(',a)
+              if a<0 or b<0: raise SystemExit('react function not found')
+              s=s[:a]+new+'\n'+s[b:]
+          # Make 4+ chains map to c4 explicitly while preserving scoring.
+          s=s.replace("react(n>=2?'magic':'cheer',n>=4?'すごーい！！':n>=2?n+'れんさ！':'やった！')","react(n>=2?'magic':'cheer',n>=4?'4れんさ！ すごーい！！':n>=2?n+'れんさ！':'やった！')")
+          # Game over pose.
+          s=s.replace("react('','また挑戦！')","react('','また遊んでね！')")
+          Path('poyopoyo-v11.html').write_text(s)
+          idx=Path('index.html')
+          t=idx.read_text().replace('poyopoyo-v10.html?v=20260826-1000','poyopoyo-v11.html?v=20260826-1100')
+          idx.write_text(t)
+          PY
+      - name: Verify
+        run: |
+          git diff --check
+          grep -F 'CHAIN PUZZLE · v11' poyopoyo-v11.html
+          grep -F '03A2A4E5-6EA6-4AAC-B0A4-3FC42A26A16E.png?v=20260826-1100' poyopoyo-v11.html
+          grep -F 'poyopoyo-v11.html?v=20260826-1100' index.html
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add poyopoyo-v11.html index.html
+          git commit -m 'Build Poyopoyo v11 with uploaded Poyona actions'
+          git push
