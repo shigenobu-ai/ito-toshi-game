@@ -23,33 +23,22 @@ jobs:
       - name: Install image validator
         run: python -m pip install --disable-pip-version-check pillow
 
-      - name: Recover JPEG from original SVG and build inline v8
+      - name: Validate alternate JPEG and build inline v8
         run: |
           python - <<'PY'
           from pathlib import Path
           from io import BytesIO
-          import base64, re, subprocess
+          import base64, subprocess
           from PIL import Image
 
-          svg = subprocess.check_output(
-              ['git','show','origin/feature/poyona-illustration:assets/poyona.svg'],
-              text=True
-          )
-          m = re.search(r'data:image/jpeg;base64,([^"\']+)', svg)
-          if not m:
-              raise SystemExit('Embedded JPEG data URL not found in original SVG')
-
-          b64_original = re.sub(r'\s+', '', m.group(1))
-          b64_original += '=' * (-len(b64_original) % 4)
-          raw = base64.b64decode(b64_original, validate=True)
-          print(f'Original SVG JPEG bytes={len(raw)} start={raw[:4].hex()} end={raw[-4:].hex()}')
-
+          raw = subprocess.check_output(['git','show','origin/fix/poyona-image-layout:assets/poyona.jpg'])
+          print(f'Alternate JPEG bytes={len(raw)} start={raw[:4].hex()} end={raw[-4:].hex()}')
           if not raw.startswith(b'\xff\xd8') or not raw.endswith(b'\xff\xd9'):
-              raise SystemExit('Original SVG embedded JPEG markers are invalid')
+              raise SystemExit('Alternate JPEG markers are invalid')
 
           with Image.open(BytesIO(raw)) as im:
               im.load()
-              print(f'Original SVG embedded JPEG strict decode OK: size={im.size}, mode={im.mode}')
+              print(f'Alternate JPEG strict decode OK: size={im.size}, mode={im.mode}')
               image = im.convert('RGB').resize((180,273), Image.Resampling.LANCZOS)
 
           out_img = BytesIO()
@@ -65,6 +54,9 @@ jobs:
               raise SystemExit('Re-encoded JPEG markers are invalid')
 
           b64 = base64.b64encode(clean_raw).decode('ascii')
+          if len(b64) % 4 != 0:
+              raise SystemExit('Generated Base64 length is invalid')
+
           src = Path('poyopoyo-v5.html').read_text(encoding='utf-8')
           old = 'src="assets/poyona.jpg?v=20260825-2220"'
           new = 'src="data:image/jpeg;base64,' + b64 + '"'
