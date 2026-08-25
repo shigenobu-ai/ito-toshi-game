@@ -7,9 +7,6 @@ on:
       - fix/poyona-inline-v8
     paths:
       - .github/workflows/build-poyona-v8.yml
-      - assets/poyona-chunk1.txt
-      - assets/poyona-chunk2.txt
-      - assets/poyona-chunk3.txt
 
 permissions:
   contents: write
@@ -21,51 +18,56 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: fix/poyona-inline-v8
+          fetch-depth: 0
 
       - name: Install image validator
         run: python -m pip install --disable-pip-version-check pillow
 
-      - name: Repair, decode and build inline v8
+      - name: Recover historical Poyona and build inline v8
         run: |
           python - <<'PY'
           from pathlib import Path
           from io import BytesIO
-          import base64, re
+          import base64, subprocess
           from PIL import Image
 
-          parts = [re.sub(r'\s+', '', Path(f'assets/poyona-chunk{i}.txt').read_text(encoding='utf-8')) for i in (1,2,3)]
-          b64_old = ''.join(parts)
-          b64_old += '=' * (-len(b64_old) % 4)
-          raw = base64.b64decode(b64_old, validate=True)
+          candidates = [
+              'd3e6089e3178c10ae301323ff37c14516c48c86f',
+              'fa68bde653b6a10538d929641f3473c5f3762488',
+          ]
 
-          if not raw.startswith(b'\xff\xd8'):
-              raise SystemExit('JPEG start marker is invalid')
+          chosen = None
+          image = None
+          for sha in candidates:
+              try:
+                  raw = subprocess.check_output(['git','show',f'{sha}:assets/poyona.jpg'])
+                  if not raw.startswith(b'\xff\xd8'):
+                      print(f'{sha}: not a JPEG start marker')
+                      continue
+                  with Image.open(BytesIO(raw)) as im:
+                      im.load()
+                      print(f'{sha}: strict decode OK, size={im.size}, mode={im.mode}, bytes={len(raw)}')
+                      image = im.convert('RGB').copy()
+                      chosen = sha
+                      break
+              except Exception as e:
+                  print(f'{sha}: rejected: {e}')
 
-          if not raw.endswith(b'\xff\xd9'):
-              raw += b'\xff\xd9'
-              print('Added missing JPEG EOI marker FF D9')
+          if image is None:
+              raise SystemExit('No historical Poyona JPEG passed strict full-image decoding')
 
-          # Strict full-image decode. Do not enable LOAD_TRUNCATED_IMAGES.
-          with Image.open(BytesIO(raw)) as im:
-              im.load()
-              if im.size != (180, 273):
-                  raise SystemExit(f'Unexpected decoded size: {im.size}')
-              if im.mode not in ('RGB', 'L'):
-                  im = im.convert('RGB')
-              elif im.mode == 'L':
-                  im = im.convert('RGB')
-              out_img = BytesIO()
-              im.save(out_img, format='JPEG', quality=90, optimize=True)
-
+          image = image.resize((180,273), Image.Resampling.LANCZOS)
+          out_img = BytesIO()
+          image.save(out_img, format='JPEG', quality=90, optimize=True)
           clean_raw = out_img.getvalue()
-          if not clean_raw.startswith(b'\xff\xd8') or not clean_raw.endswith(b'\xff\xd9'):
-              raise SystemExit('Re-encoded JPEG markers are invalid')
 
-          # Decode the re-encoded result once more to verify every pixel.
           with Image.open(BytesIO(clean_raw)) as check:
               check.load()
-              if check.size != (180, 273):
+              if check.size != (180,273):
                   raise SystemExit(f'Re-encoded size mismatch: {check.size}')
+
+          if not clean_raw.startswith(b'\xff\xd8') or not clean_raw.endswith(b'\xff\xd9'):
+              raise SystemExit('Re-encoded JPEG markers are invalid')
 
           b64 = base64.b64encode(clean_raw).decode('ascii')
           if len(b64) % 4 != 0:
@@ -84,7 +86,8 @@ jobs:
               raise SystemExit('Inline JPEG count is not exactly one')
 
           Path('poyopoyo-v8.html').write_text(out, encoding='utf-8')
-          print(f'Validated full JPEG decode: 180x273, {len(clean_raw)} bytes')
+          print(f'Chosen historical image: {chosen}')
+          print(f'Validated output JPEG: 180x273, {len(clean_raw)} bytes')
           print(f'Generated inline Base64: {len(b64)} chars')
           print(f'Generated poyopoyo-v8.html: {len(out)} chars')
           PY
