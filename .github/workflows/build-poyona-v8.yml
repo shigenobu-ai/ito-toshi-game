@@ -30,6 +30,7 @@ jobs:
 
           parts = [Path(f'assets/poyona-chunk{i}.txt').read_text(encoding='utf-8') for i in (1,2,3)]
           b64 = re.sub(r'\s+', '', ''.join(parts))
+          b64 += '=' * (-len(b64) % 4)
           raw = base64.b64decode(b64, validate=True)
 
           if not raw.startswith(b'\xff\xd8') or not raw.endswith(b'\xff\xd9'):
