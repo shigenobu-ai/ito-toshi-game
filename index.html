@@ -11,40 +11,42 @@
 <body>
 <canvas id="game"></canvas>
 <div class="hud"><div class="title">🧵 糸通し</div><div class="score">0</div></div>
-<div class="hint">押している間だけ上昇</div>
-<div id="overlay" class="overlay"><div class="card"><h1>糸通し</h1><p>糸は重力で落ちていきます。<br><strong>画面を押している間だけ上昇。</strong><br>高さも穴の大きさも違う針を、何本通せる？</p><button id="start">スタート</button></div></div>
+<div class="hint">押し続けると強く上昇</div>
+<div id="overlay" class="overlay"><div class="card"><h1>糸通し</h1><p>糸は重力で落ちていきます。<br><strong>画面を押している間は上昇。</strong><br>針の上端にある穴を次々通してください。</p><button id="start">スタート</button></div></div>
 <script>
 (()=>{
 const c=document.getElementById('game'),ctx=c.getContext('2d'),scoreEl=document.querySelector('.score'),overlay=document.getElementById('overlay');
-let W=0,H=0,dpr=1,running=false,pressing=false,last=0,score=0,best=0,speed=190,spawnTimer=0,needles=[],trail=[],raf=0;
+let W=0,H=0,dpr=1,running=false,pressing=false,last=0,score=0,best=0,speed=190,needles=[],trail=[],raf=0;
 const player={x:0,y:0,vy:0,r:6};
-function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);player.x=W*.27;if(!running)player.y=H*.5}
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);player.x=W*.27;if(!running)player.y=H*.52}
 function rnd(a,b){return a+Math.random()*(b-a)}
-function makeNeedle(x=W+80){const eyeH=rnd(48,112),top=rnd(H*.18,H*.63-eyeH);return{x,w:rnd(22,32),eyeY:top,eyeH,passed:false}}
-function reset(){score=0;speed=190;spawnTimer=0;needles=[];trail=[];scoreEl.textContent='0';player.x=W*.27;player.y=H*.5;player.vy=0;for(let i=0;i<4;i++)needles.push(makeNeedle(W+230+i*rnd(235,305)));}
-function start(){reset();running=true;overlay.style.display='none';last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
-function gameOver(){if(!running)return;running=false;best=Math.max(score,Number(localStorage.getItem('ito-scroll-best')||0));localStorage.setItem('ito-scroll-best',best);navigator.vibrate?.([50,35,80]);overlay.innerHTML=`<div class="card"><h1>${score}本</h1><p>ベスト <strong>${best}本</strong></p><button id="again">もう一回</button></div>`;overlay.style.display='flex';document.getElementById('again').onclick=start}
+function makeNeedle(x=W+80){const eyeH=rnd(38,92);const eyeCenter=rnd(H*.16,H*.69);const top=Math.max(18,eyeCenter-eyeH*.62-16);const bodyTop=eyeCenter+eyeH*.62;return{x,w:rnd(22,31),top,eyeCenter,eyeH,bodyTop,passed:false}}
+function reset(){score=0;speed=190;needles=[];trail=[];scoreEl.textContent='0';player.x=W*.27;player.y=H*.52;player.vy=0;for(let i=0;i<4;i++)needles.push(makeNeedle(W+230+i*rnd(235,305)))}
+function start(){reset();running=true;pressing=false;overlay.style.display='none';last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
+function gameOver(){if(!running)return;running=false;pressing=false;best=Math.max(score,Number(localStorage.getItem('ito-scroll-best')||0));localStorage.setItem('ito-scroll-best',best);navigator.vibrate?.([50,35,80]);overlay.innerHTML=`<div class="card"><h1>${score}本</h1><p>ベスト <strong>${best}本</strong></p><button id="again">もう一回</button></div>`;overlay.style.display='flex';document.getElementById('again').onclick=start}
 function update(dt){
  speed=190+Math.min(150,score*7);
- const gravity=650, thrust=-980;
- player.vy+=gravity*dt;if(pressing)player.vy+=thrust*dt;player.vy=Math.max(-310,Math.min(360,player.vy));player.y+=player.vy*dt;
+ const gravity=620,thrust=-1550;
+ player.vy+=gravity*dt;if(pressing)player.vy+=thrust*dt;player.vy=Math.max(-540,Math.min(390,player.vy));player.y+=player.vy*dt;
  if(player.y<8||player.y>H-8){gameOver();return}
- trail.push({x:player.x,y:player.y});if(trail.length>70)trail.shift();
+ trail.push({y:player.y});if(trail.length>75)trail.shift();
  for(const n of needles)n.x-=speed*dt;
  const lastN=needles[needles.length-1];if(lastN&&lastN.x<W-180)needles.push(makeNeedle(W+rnd(210,310)));
  needles=needles.filter(n=>n.x>-80);
  for(const n of needles){
    const left=n.x-n.w/2,right=n.x+n.w/2,py=player.y,r=player.r;
+   const gapTop=n.eyeCenter-n.eyeH*.43,gapBottom=n.eyeCenter+n.eyeH*.43;
+   if(player.x+r>left&&player.x-r<right){if(py-r<gapTop||py+r>gapBottom){gameOver();return}}
    if(!n.passed&&right<player.x-r){n.passed=true;score++;scoreEl.textContent=score;navigator.vibrate?.(16)}
-   if(player.x+r>left&&player.x-r<right){const gapTop=n.eyeY,gapBottom=n.eyeY+n.eyeH;if(py-r<gapTop||py+r>gapBottom){gameOver();return}}
  }
 }
 function drawBg(){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#16202d');g.addColorStop(1,'#0d1118');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.strokeStyle='#ffffff08';ctx.lineWidth=1;for(let y=H*.2;y<H;y+=80){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}}
-function drawNeedle(n){const x=n.x,w=n.w,top=n.eyeY,bottom=n.eyeY+n.eyeH;const grad=ctx.createLinearGradient(x-w/2,0,x+w/2,0);grad.addColorStop(0,'#68717c');grad.addColorStop(.45,'#eef2f6');grad.addColorStop(.72,'#a8b0b8');grad.addColorStop(1,'#5d6670');ctx.fillStyle=grad;ctx.shadowColor='#0008';ctx.shadowBlur=10;
- ctx.beginPath();ctx.roundRect(x-w/2,-20,w,top+28,[0,0,10,10]);ctx.fill();ctx.beginPath();ctx.roundRect(x-w/2,bottom-28,w,H-bottom+80,[10,10,0,0]);ctx.fill();ctx.shadowBlur=0;
- ctx.strokeStyle='#e9edf2';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x,(top+bottom)/2,w*.26,n.eyeH*.39,0,0,Math.PI*2);ctx.stroke();
+function drawNeedle(n){const x=n.x,w=n.w,eyeTop=n.eyeCenter-n.eyeH*.5,eyeBottom=n.eyeCenter+n.eyeH*.5;const grad=ctx.createLinearGradient(x-w/2,0,x+w/2,0);grad.addColorStop(0,'#626b75');grad.addColorStop(.42,'#f4f7fa');grad.addColorStop(.7,'#aeb6be');grad.addColorStop(1,'#59626c');ctx.fillStyle=grad;ctx.shadowColor='#0009';ctx.shadowBlur=10;
+ ctx.beginPath();ctx.moveTo(x,n.top);ctx.quadraticCurveTo(x-w*.52,n.top+6,x-w/2,eyeTop+8);ctx.lineTo(x-w/2,eyeBottom-8);ctx.quadraticCurveTo(x-w*.48,eyeBottom+3,x-w*.34,eyeBottom+10);ctx.lineTo(x-w*.34,H+20);ctx.lineTo(x+w*.34,H+20);ctx.lineTo(x+w*.34,eyeBottom+10);ctx.quadraticCurveTo(x+w*.48,eyeBottom+3,x+w/2,eyeBottom-8);ctx.lineTo(x+w/2,eyeTop+8);ctx.quadraticCurveTo(x+w*.52,n.top+6,x,n.top);ctx.closePath();ctx.fill();ctx.shadowBlur=0;
+ ctx.fillStyle='#10151d';ctx.beginPath();ctx.ellipse(x,n.eyeCenter,w*.27,n.eyeH*.43,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#f2f5f8';ctx.lineWidth=2;ctx.stroke();
+ ctx.fillStyle='#e7edf2';ctx.beginPath();ctx.moveTo(x-w*.34,H-2);ctx.lineTo(x+w*.34,H-2);ctx.lineTo(x,H+10);ctx.closePath();ctx.fill();
 }
-function drawThread(){if(trail.length<2)return;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#ef4151';ctx.lineWidth=6;ctx.shadowColor='#ef415177';ctx.shadowBlur=8;ctx.beginPath();for(let i=0;i<trail.length;i++){const p=trail[i],age=trail.length-1-i;const tx=player.x-age*5.2;const sag=Math.pow(age/trail.length,1.7)*55;const ty=p.y+sag;if(i===0)ctx.moveTo(tx,ty);else ctx.lineTo(tx,ty)}ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#ff6874';ctx.beginPath();ctx.arc(player.x,player.y,7,0,Math.PI*2);ctx.fill()}
+function drawThread(){if(trail.length<2)return;ctx.lineCap='round';ctx.lineJoin='round';ctx.strokeStyle='#ef4151';ctx.lineWidth=6;ctx.shadowColor='#ef415177';ctx.shadowBlur=8;ctx.beginPath();for(let i=0;i<trail.length;i++){const p=trail[i],age=trail.length-1-i;const tx=player.x-age*5.2;const sag=Math.pow(age/trail.length,1.65)*58;const ty=p.y+sag;if(i===0)ctx.moveTo(tx,ty);else ctx.lineTo(tx,ty)}ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle='#ff6874';ctx.beginPath();ctx.arc(player.x,player.y,7,0,Math.PI*2);ctx.fill()}
 function draw(){drawBg();for(const n of needles)drawNeedle(n);drawThread()}
 function loop(t){const dt=Math.min(.033,(t-last)/1000);last=t;if(running)update(dt);draw();if(running)raf=requestAnimationFrame(loop)}
 function down(e){if(running){pressing=true;e.preventDefault()}}function up(e){pressing=false;if(running)e?.preventDefault?.()}
