@@ -1,0 +1,1 @@
+Poyona action crops derived from the user-provided 9-pose source image. No generated images.
