@@ -1,0 +1,52 @@
+name: Fix Poyopoyo v9 Poyona and round poyos
+'on':
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-poyopoyo-v9-poyona-round.yml
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore jpg mascot and round poyos
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('poyopoyo-v9.html')
+          s=p.read_text()
+          old='src="./assets/poyona.svg?v=20260826-0101"'
+          new='src="./assets/poyona.jpg?v=20260826-0102"'
+          if old not in s: raise SystemExit('mascot image ref not found')
+          s=s.replace(old,new,1)
+          a=s.index('function blob(')
+          b=s.index('function drawGrid(',a)
+          blob="""function blob(c,x,y,boardMode=true){const px=x*S+25,py=y*S+25,r=22,col=colors[c];if(boardMode){for(const[dx,dy]of[[1,0],[0,1]]){const nx=x+dx,ny=y+dy;if(nx<C&&ny<R&&board[ny]?.[nx]===c)bridge(c,x,y,dx,dy)}}const grad=ctx.createRadialGradient(px-8,py-10,3,px,py,r+3);grad.addColorStop(0,shade(col,70));grad.addColorStop(.28,col);grad.addColorStop(1,shade(col,-55));ctx.fillStyle=grad;ctx.beginPath();ctx.arc(px,py,r,0,Math.PI*2);ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#ffffff99';ctx.stroke();ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(px-7,py-3,5,7,0,0,Math.PI*2);ctx.ellipse(px+7,py-3,5,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#17305b';ctx.beginPath();ctx.arc(px-6,py-2,2.2,0,Math.PI*2);ctx.arc(px+6,py-2,2.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#6b2858';ctx.lineWidth=1.7;ctx.beginPath();ctx.arc(px,py+8,5,.1*Math.PI,.9*Math.PI);ctx.stroke();ctx.fillStyle='#fff9';ctx.beginPath();ctx.ellipse(px-10,py-12,5,3,-.4,0,Math.PI*2);ctx.fill()}\n"""
+          s=s[:a]+blob+s[b:]
+          a=s.index('function preview(')
+          b=s.index('function drawNext(',a)
+          preview="""function preview(ct,p){ct.clearRect(0,0,52,72);const drawP=(c,x,y)=>{const col=colors[c],g=ct.createRadialGradient(x-4,y-5,2,x,y,13);g.addColorStop(0,shade(col,70));g.addColorStop(.35,col);g.addColorStop(1,shade(col,-55));ct.fillStyle=g;ct.beginPath();ct.arc(x,y,13,0,Math.PI*2);ct.fill();ct.strokeStyle='#fff9';ct.stroke();ct.fillStyle='#fff';ct.beginPath();ct.arc(x-4,y-2,3,0,Math.PI*2);ct.arc(x+4,y-2,3,0,Math.PI*2);ct.fill();ct.fillStyle='#17305b';ct.beginPath();ct.arc(x-4,y-2,1.2,0,Math.PI*2);ct.arc(x+4,y-2,1.2,0,Math.PI*2);ct.fill()};drawP(p.b,26,20);drawP(p.a,26,47)}\n"""
+          s=s[:a]+preview+s[b:]
+          p.write_text(s)
+          idx=Path('index.html')
+          t=idx.read_text().replace('poyopoyo-v9.html?v=20260826-0101','poyopoyo-v9.html?v=20260826-0102')
+          if t==idx.read_text():
+              t=idx.read_text().replace('poyopoyo-v9.html?v=20260826-0100','poyopoyo-v9.html?v=20260826-0102')
+          idx.write_text(t)
+          PY
+      - name: Verify
+        run: |
+          git diff --check
+          grep -F 'poyona.jpg?v=20260826-0102' poyopoyo-v9.html
+          grep -F 'ctx.arc(px,py,r,0,Math.PI*2)' poyopoyo-v9.html
+          grep -F 'ct.arc(x,y,13,0,Math.PI*2)' poyopoyo-v9.html
+          grep -F 'poyopoyo-v9.html?v=20260826-0102' index.html
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add poyopoyo-v9.html index.html
+          git commit -m 'Use working Poyona jpg and restore round poyos'
+          git push
