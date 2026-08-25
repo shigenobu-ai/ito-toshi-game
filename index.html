@@ -11,31 +11,31 @@
 <body>
 <canvas id="game"></canvas>
 <div class="hud"><div class="title">🧵 糸通し</div><div class="score">0</div></div>
-<div class="hint">押し続けると強く上昇</div>
+<div class="hint">押している間は上昇</div>
 <div id="overlay" class="overlay"><div class="card"><h1>糸通し</h1><p>糸は重力で落ちていきます。<br><strong>画面を押している間は上昇。</strong><br>針の上端にある穴を次々通してください。</p><button id="start">スタート</button></div></div>
 <script>
 (()=>{
 const c=document.getElementById('game'),ctx=c.getContext('2d'),scoreEl=document.querySelector('.score'),overlay=document.getElementById('overlay');
-let W=0,H=0,dpr=1,running=false,pressing=false,last=0,score=0,best=0,speed=190,needles=[],trail=[],raf=0;
-const player={x:0,y:0,vy:0,r:6};
+let W=0,H=0,dpr=1,running=false,pressing=false,last=0,score=0,best=0,speed=170,needles=[],trail=[],raf=0;
+const player={x:0,y:0,vy:0,r:5};
 function resize(){dpr=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;c.width=W*dpr;c.height=H*dpr;c.style.width=W+'px';c.style.height=H+'px';ctx.setTransform(dpr,0,0,dpr,0,0);player.x=W*.27;if(!running)player.y=H*.52}
 function rnd(a,b){return a+Math.random()*(b-a)}
 function makeNeedle(x=W+80){const eyeH=rnd(38,92);const eyeCenter=rnd(H*.16,H*.69);const top=Math.max(18,eyeCenter-eyeH*.62-16);const bodyTop=eyeCenter+eyeH*.62;return{x,w:rnd(22,31),top,eyeCenter,eyeH,bodyTop,passed:false}}
-function reset(){score=0;speed=190;needles=[];trail=[];scoreEl.textContent='0';player.x=W*.27;player.y=H*.52;player.vy=0;for(let i=0;i<4;i++)needles.push(makeNeedle(W+230+i*rnd(235,305)))}
+function reset(){score=0;speed=170;needles=[];trail=[];scoreEl.textContent='0';player.x=W*.27;player.y=H*.52;player.vy=0;for(let i=0;i<4;i++)needles.push(makeNeedle(W+230+i*rnd(250,320)))}
 function start(){reset();running=true;pressing=false;overlay.style.display='none';last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop)}
 function gameOver(){if(!running)return;running=false;pressing=false;best=Math.max(score,Number(localStorage.getItem('ito-scroll-best')||0));localStorage.setItem('ito-scroll-best',best);navigator.vibrate?.([50,35,80]);overlay.innerHTML=`<div class="card"><h1>${score}本</h1><p>ベスト <strong>${best}本</strong></p><button id="again">もう一回</button></div>`;overlay.style.display='flex';document.getElementById('again').onclick=start}
 function update(dt){
- speed=190+Math.min(150,score*7);
- const gravity=620,thrust=-1550;
- player.vy+=gravity*dt;if(pressing)player.vy+=thrust*dt;player.vy=Math.max(-540,Math.min(390,player.vy));player.y+=player.vy*dt;
+ speed=170+Math.min(120,score*6);
+ const gravity=620,thrust=-1380;
+ player.vy+=gravity*dt;if(pressing)player.vy+=thrust*dt;player.vy=Math.max(-470,Math.min(370,player.vy));player.y+=player.vy*dt;
  if(player.y<8||player.y>H-8){gameOver();return}
  trail.push({y:player.y});if(trail.length>75)trail.shift();
  for(const n of needles)n.x-=speed*dt;
- const lastN=needles[needles.length-1];if(lastN&&lastN.x<W-180)needles.push(makeNeedle(W+rnd(210,310)));
+ const lastN=needles[needles.length-1];if(lastN&&lastN.x<W-180)needles.push(makeNeedle(W+rnd(225,325)));
  needles=needles.filter(n=>n.x>-80);
  for(const n of needles){
    const left=n.x-n.w/2,right=n.x+n.w/2,py=player.y,r=player.r;
-   const gapTop=n.eyeCenter-n.eyeH*.43,gapBottom=n.eyeCenter+n.eyeH*.43;
+   const gapTop=n.eyeCenter-n.eyeH*.47,gapBottom=n.eyeCenter+n.eyeH*.47;
    if(player.x+r>left&&player.x-r<right){if(py-r<gapTop||py+r>gapBottom){gameOver();return}}
    if(!n.passed&&right<player.x-r){n.passed=true;score++;scoreEl.textContent=score;navigator.vibrate?.(16)}
  }
