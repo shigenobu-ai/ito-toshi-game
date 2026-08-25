@@ -1,0 +1,53 @@
+name: Fix Poyopoyo v9 visuals
+'on':
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/fix-poyopoyo-v9-visuals.yml
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix mascot, remove danger mark, reshape poyos
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('poyopoyo-v9.html')
+          s=p.read_text()
+          s=s.replace('<div class="danger">×</div>','',1)
+          old='<div class="panel mascot" id="mascot"><div class="mascotName">ポヨナ</div><div class="mascotTalk" id="talk">いくよ！</div><div class="stars">✦ ★ ✧</div></div>'
+          new='<div class="panel mascot" id="mascot"><img class="mascotImg" src="./assets/poyona.svg?v=20260826-0101" alt="ポヨナ"><div class="mascotTalk" id="talk">いくよ！</div></div>'
+          if old not in s: raise SystemExit('mascot block not found')
+          s=s.replace(old,new,1)
+          css='.mascotImg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;z-index:1}.mascotTalk{position:absolute!important;z-index:3!important;left:6%;right:6%;bottom:7px;margin:0!important;width:auto!important;background:#fffffff2!important}.mascot:before,.mascot:after{z-index:2}'
+          s=s.replace('</style>',css+'\n</style>',1)
+          a=s.index('function blob(')
+          b=s.index('function drawGrid(',a)
+          blob="""function blob(c,x,y,boardMode=true){const px=x*S+25,py=y*S+25,r=22,col=colors[c];if(boardMode){for(const[dx,dy]of[[1,0],[0,1]]){const nx=x+dx,ny=y+dy;if(nx<C&&ny<R&&board[ny]?.[nx]===c)bridge(c,x,y,dx,dy)}}const grad=ctx.createRadialGradient(px-r*.35,py-r*.5,r*.06,px,py+r*.08,r*1.08);grad.addColorStop(0,'#fff');grad.addColorStop(.16,shade(col,60));grad.addColorStop(.58,col);grad.addColorStop(1,shade(col,-58));ctx.fillStyle=grad;ctx.beginPath();ctx.moveTo(px,py-r*.98);ctx.bezierCurveTo(px+r*.18,py-r*.94,px+r*.5,py-r*.82,px+r*.72,py-r*.52);ctx.bezierCurveTo(px+r*.98,py-r*.18,px+r*1.02,py+r*.28,px+r*.82,py+r*.58);ctx.bezierCurveTo(px+r*.6,py+r*.9,px+r*.28,py+r*.98,px,py+r*.9);ctx.bezierCurveTo(px-r*.28,py+r*.98,px-r*.6,py+r*.9,px-r*.82,py+r*.58);ctx.bezierCurveTo(px-r*1.02,py+r*.28,px-r*.98,py-r*.18,px-r*.72,py-r*.52);ctx.bezierCurveTo(px-r*.5,py-r*.82,px-r*.18,py-r*.94,px,py-r*.98);ctx.closePath();ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#ffffffb8';ctx.stroke();ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(px-7,py-3,5,7,0,0,Math.PI*2);ctx.ellipse(px+7,py-3,5,7,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#17305b';ctx.beginPath();ctx.arc(px-6,py-2,2.2,0,Math.PI*2);ctx.arc(px+6,py-2,2.2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#6b2858';ctx.lineWidth=1.7;ctx.beginPath();ctx.arc(px,py+8,5,.1*Math.PI,.9*Math.PI);ctx.stroke();ctx.fillStyle='#fff9';ctx.beginPath();ctx.ellipse(px-10,py-12,5,3,-.4,0,Math.PI*2);ctx.fill()}\n"""
+          s=s[:a]+blob+s[b:]
+          a=s.index('function preview(')
+          b=s.index('function drawNext(',a)
+          preview="""function preview(ct,p){ct.clearRect(0,0,52,72);const drawP=(c,x,y)=>{const col=colors[c],r=13,g=ct.createRadialGradient(x-r*.35,y-r*.5,2,x,y,r+2);g.addColorStop(0,'#fff');g.addColorStop(.18,shade(col,60));g.addColorStop(.6,col);g.addColorStop(1,shade(col,-55));ct.fillStyle=g;ct.beginPath();ct.moveTo(x,y-r*.98);ct.bezierCurveTo(x+r*.2,y-r*.9,x+r*.7,y-r*.6,x+r*.82,y-r*.1);ct.bezierCurveTo(x+r*.92,y+r*.45,x+r*.55,y+r*.9,x,y+r*.84);ct.bezierCurveTo(x-r*.55,y+r*.9,x-r*.92,y+r*.45,x-r*.82,y-r*.1);ct.bezierCurveTo(x-r*.7,y-r*.6,x-r*.2,y-r*.9,x,y-r*.98);ct.closePath();ct.fill();ct.strokeStyle='#fff9';ct.stroke();ct.fillStyle='#fff';ct.beginPath();ct.arc(x-4,y-2,3,0,Math.PI*2);ct.arc(x+4,y-2,3,0,Math.PI*2);ct.fill();ct.fillStyle='#17305b';ct.beginPath();ct.arc(x-4,y-2,1.2,0,Math.PI*2);ct.arc(x+4,y-2,1.2,0,Math.PI*2);ct.fill()};drawP(p.b,26,20);drawP(p.a,26,47)}\n"""
+          s=s[:a]+preview+s[b:]
+          p.write_text(s)
+          idx=Path('index.html')
+          t=idx.read_text().replace('poyopoyo-v9.html?v=20260826-0100','poyopoyo-v9.html?v=20260826-0101')
+          idx.write_text(t)
+          PY
+      - name: Verify
+        run: |
+          git diff --check
+          grep -F 'poyona.svg?v=20260826-0101' poyopoyo-v9.html
+          ! grep -F '<div class="danger">×</div>' poyopoyo-v9.html
+          grep -F 'context' poyopoyo-v9.html >/dev/null || true
+          grep -F 'poyopoyo-v9.html?v=20260826-0101' index.html
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add poyopoyo-v9.html index.html
+          git commit -m 'Restore Poyona and refine poyo shapes in v9'
+          git push
