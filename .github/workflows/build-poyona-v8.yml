@@ -28,10 +28,18 @@ jobs:
           from pathlib import Path
           import base64, re
 
-          parts = [Path(f'assets/poyona-chunk{i}.txt').read_text(encoding='utf-8') for i in (1,2,3)]
-          b64 = re.sub(r'\s+', '', ''.join(parts))
+          parts = []
+          for i in (1,2,3):
+              s = Path(f'assets/poyona-chunk{i}.txt').read_text(encoding='utf-8')
+              clean = re.sub(r'\s+', '', s)
+              parts.append(clean)
+              print(f'chunk{i}: len={len(clean)} first={clean[:16]!r} last={clean[-16:]!r}')
+
+          b64 = ''.join(parts)
+          print(f'joined: len={len(b64)} mod4={len(b64)%4} first={b64[:24]!r} last={b64[-24:]!r}')
           b64 += '=' * (-len(b64) % 4)
           raw = base64.b64decode(b64, validate=True)
+          print(f'decoded: len={len(raw)} first16={raw[:16].hex()} last16={raw[-16:].hex()}')
 
           if not raw.startswith(b'\xff\xd8') or not raw.endswith(b'\xff\xd9'):
               raise SystemExit('JPEG magic markers are invalid')
@@ -45,14 +53,10 @@ jobs:
                   continue
               while pos < len(raw) and raw[pos] == 0xFF:
                   pos += 1
-              if pos >= len(raw):
-                  break
-              marker = raw[pos]
-              pos += 1
-              if marker in (0xD8,0xD9) or 0xD0 <= marker <= 0xD7:
-                  continue
-              if pos + 2 > len(raw):
-                  break
+              if pos >= len(raw): break
+              marker = raw[pos]; pos += 1
+              if marker in (0xD8,0xD9) or 0xD0 <= marker <= 0xD7: continue
+              if pos + 2 > len(raw): break
               seglen = int.from_bytes(raw[pos:pos+2], 'big')
               if marker in sof and pos + 7 <= len(raw):
                   height = int.from_bytes(raw[pos+3:pos+5], 'big')
@@ -68,16 +72,11 @@ jobs:
           new = 'src="data:image/jpeg;base64,' + b64 + '"'
           if src.count(old) != 1:
               raise SystemExit(f'Expected one Poyona image reference, found {src.count(old)}')
-
           out = src.replace(old, new)
-          if 'fetch(' in out:
-              raise SystemExit('Unexpected fetch() found in v8')
-          if out.count('data:image/jpeg;base64,') != 1:
-              raise SystemExit('Inline JPEG count is not exactly one')
-
+          if 'fetch(' in out: raise SystemExit('Unexpected fetch() found in v8')
+          if out.count('data:image/jpeg;base64,') != 1: raise SystemExit('Inline JPEG count is not exactly one')
           Path('poyopoyo-v8.html').write_text(out, encoding='utf-8')
           print(f'Validated JPEG: {width}x{height}, {len(raw)} bytes')
-          print(f'Generated poyopoyo-v8.html: {len(out)} chars')
           PY
 
       - name: Commit generated v8
