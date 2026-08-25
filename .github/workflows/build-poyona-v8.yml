@@ -1,3 +1,4 @@
+# v8 inline image build
 name: Build Poyona v8
 
 on:
@@ -34,7 +35,6 @@ jobs:
           if not raw.startswith(b'\xff\xd8') or not raw.endswith(b'\xff\xd9'):
               raise SystemExit('JPEG magic markers are invalid')
 
-          # Read JPEG dimensions without external libraries.
           pos = 2
           width = height = None
           sof = {0xC0,0xC1,0xC2,0xC3,0xC5,0xC6,0xC7,0xC9,0xCA,0xCB,0xCD,0xCE,0xCF}
