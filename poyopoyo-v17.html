@@ -1,1 +1,121 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ぽよぽよ v17</title></head><body><script>(async()=>{const r=await fetch('./poyopoyo-v13.html?v=20260826-v17base',{cache:'no-store'});let h=await r.text();h=h.replace('CHAIN PUZZLE · v13','CHAIN PUZZLE · v17');h=h.replace('@keyframes poyocharBounce{45%{transform:translateY(-5px) scale(1.04)}}','@keyframes poyocharBounce{0%,100%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) translateY(-5px) scale(1.04)}}');h=h.replace('function character(action,hold=700)','function character(action,hold=1400)');h=h.replace("character('rotate');","character('rotate',1200);");h=h.replace(",850);sound('clear',n)",",1600);sound('clear',n)");h=h.replace('await sleep(120);let removed=0;','await sleep(480);let removed=0;');h=h.replace('await sleep(170);gravity();draw();await sleep(125)','await sleep(520);gravity();draw();await sleep(320)');h=h.replace('function lock(){if(!active)return;for(const p of cells()){if(p.y<0){end();return}board[p.y][p.x]=p.c}active=null;resolve()}','async function lock(){if(!active)return;for(const p of cells()){if(p.y<0){end();return}board[p.y][p.x]=p.c}active=null;draw();await sleep(140);gravity();draw();await sleep(120);resolve()}');const arcade=`<style id="arcade-ui-v4">body{background:radial-gradient(circle at 13% 14%,#fff 0 3.5%,transparent 3.8%),radial-gradient(circle at 87% 24%,#fff 0 4.5%,transparent 4.8%),linear-gradient(180deg,#35baf5 0%,#75d8ff 58%,#b9efff 76%,#7fd66f 100%)!important}.wrap{position:relative;width:min(455px,100%);gap:7px}.top{min-height:92px;align-items:flex-start;padding:4px 4px 0}.logo{font-size:40px;letter-spacing:-4px;filter:saturate(1.15);text-shadow:0 3px 0 #fff,0 6px 0 #2453a2,0 9px 14px #17488577}.sub{font-size:10px;margin-left:4px}.score{position:absolute;z-index:8;left:2px;top:105px;width:92px;min-width:92px;text-align:center;border-radius:17px;padding:5px 5px 7px}.score:before{content:'スコア';display:block;margin:-15px 3px 3px;padding:3px 5px;border-radius:12px;background:#ff4e91;color:#fff;font-size:11px;font-weight:1000}.score small{display:none}.score b{font-size:20px}.gameRow{position:relative;display:block;margin-left:0;min-height:520px}.wellShell{position:relative;width:72%;margin-left:auto;padding:6px;border-radius:17px;background:linear-gradient(#b9eaff,#75bdf6);box-shadow:0 6px 0 #245ca4,0 10px 18px #22578855}.well{border-radius:7px;border-color:#0c4d91;background:linear-gradient(180deg,#073a76,#062759 62%,#041b42)}.side{position:static}.side>.panel:first-child{position:absolute;z-index:8;right:0;top:-78px;width:82px;border-radius:14px;padding:5px 7px;background:linear-gradient(#1d65ad,#124682)}.side>.panel:first-child .pt{font-size:10px;color:#fff;margin-bottom:2px}.nextWrap{display:block}.nextCard{border:0;background:transparent;padding:0}.nextCard:nth-child(n+2){display:none!important}.nextCard small{display:none}.nextCard canvas{width:58px;height:44px;object-fit:contain}.side>.panel:nth-child(2){position:absolute;z-index:7;left:4px;top:98px;width:90px;border-radius:16px;padding:7px 4px}.side>.panel:nth-child(2):before{content:'チェイン';display:block;margin:-16px 2px 4px;padding:3px;border-radius:12px;background:#ff4e91;color:#fff;font-size:10px;font-weight:1000}.side>.panel:nth-child(2) .pt{display:none}.chainNum{font-size:25px}.maxLabel{font-size:8px}.mascot{position:absolute;z-index:6;left:-8px;bottom:8px;width:150px;height:285px!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible;pointer-events:none!important}.mascot #poyona,.mascot .poyona-action-img{pointer-events:none!important}.mascot #poyona{background:transparent!important;overflow:visible}.mascot .poyona-action-img{width:185%;height:185%;filter:drop-shadow(0 4px 3px #2464a455)}.controls{position:relative;z-index:20}.controls button{position:relative;z-index:21}.chainPop{font-size:31px;color:#fff328;text-shadow:-2px -2px #fff,2px -2px #fff,-2px 2px #fff,2px 2px #fff,0 5px #e9474f,0 8px 12px #0008}@media(max-width:390px){.top{min-height:84px}.logo{font-size:34px}.score{top:97px;width:82px;min-width:82px}.gameRow{min-height:470px}.wellShell{width:73%}.side>.panel:first-child{top:-72px;width:76px}.nextCard canvas{width:52px;height:39px}.side>.panel:nth-child(2){left:2px;width:79px;top:90px}.mascot{left:-10px;width:136px;height:250px!important}.mascot .poyona-action-img{width:180%;height:180%}}</style>`;h=h.replace('</head>',arcade+'</head>');h=h.replace('</body>','<audio id="poyoBgm" src="./assets/20260519090952_64230f82_Candy_Sky_Parade__1_.mp3" loop preload="auto"></audio><script>const poyoBgm=document.getElementById("poyoBgm");poyoBgm.volume=.38;document.getElementById("start").addEventListener("click",()=>{poyoBgm.currentTime=0;poyoBgm.play().catch(()=>{})});<\/script></body>');document.open();document.write(h);document.close()})().catch(()=>{document.body.innerHTML='<p style="font-family:sans-serif;padding:24px">v17の読み込みに失敗しました。</p>'})</script></body></html>
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ぽよぽよ v17</title><style id="safe-ui-redesign-v1">
+/* CLEAN UI OVERRIDE — gameplay logic untouched */
+body{
+  padding:max(6px,env(safe-area-inset-top)) 6px max(8px,env(safe-area-inset-bottom))!important;
+  background:linear-gradient(180deg,#39bdf6 0%,#78d8ff 62%,#c0f0ff 82%,#88d977 100%)!important;
+}
+.wrap{width:min(455px,100%)!important;gap:6px!important}
+.top{position:relative!important;min-height:86px!important;padding:0!important;align-items:flex-start!important}
+.logo{
+  position:absolute!important;left:4px!important;top:2px!important;
+  font-size:34px!important;line-height:.95!important;letter-spacing:-3px!important;
+  font-family:"Hiragino Maru Gothic ProN","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif!important;
+  font-weight:900!important;
+}
+.sub{
+  position:absolute!important;left:7px!important;top:43px!important;
+  font-size:9px!important;letter-spacing:.12em!important;
+  white-space:nowrap!important;overflow:hidden!important;width:128px!important;
+}
+.score{
+  position:absolute!important;left:6px!important;top:94px!important;
+  width:105px!important;min-width:105px!important;height:62px!important;
+  padding:12px 6px 5px!important;text-align:center!important;border-radius:16px!important;
+}
+.score:before{
+  content:"スコア"!important;position:absolute!important;left:12px!important;right:12px!important;top:-14px!important;
+  height:24px!important;line-height:24px!important;margin:0!important;padding:0!important;
+  border-radius:12px!important;background:#ff4e91!important;color:#fff!important;
+  font-size:11px!important;font-weight:900!important;text-align:center!important;white-space:nowrap!important;
+}
+.score small{display:none!important}
+.score b{
+  display:block!important;width:100%!important;text-align:center!important;
+  font-size:24px!important;line-height:1!important;
+  font-family:"Hiragino Maru Gothic ProN","Arial Rounded MT Bold",sans-serif!important;
+  font-weight:900!important;
+}
+.gameRow{position:relative!important;display:block!important;min-height:500px!important;height:500px!important;margin:0!important}
+.wellShell{
+  position:absolute!important;left:119px!important;top:-66px!important;
+  width:210px!important;margin:0!important;padding:6px!important;border-radius:18px!important;
+}
+.side{position:static!important}
+.side>.panel:first-child{
+  position:absolute!important;right:6px!important;top:-58px!important;
+  width:44px!important;height:92px!important;padding:4px 3px!important;
+  border-radius:11px!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  overflow:hidden!important;
+}
+.side>.panel:first-child .pt{display:none!important}
+.nextWrap{display:block!important;width:100%!important}
+.nextCard{padding:0!important;border:0!important;background:transparent!important}
+.nextCard:nth-child(2){display:none!important}
+.nextCard small{display:none!important}
+.nextCard canvas{display:block!important;width:34px!important;height:46px!important;margin:auto!important}
+.side>.panel:nth-child(2){
+  position:absolute!important;left:6px!important;top:87px!important;
+  width:105px!important;height:62px!important;padding:12px 6px 5px!important;border-radius:16px!important;
+}
+.side>.panel:nth-child(2):before{
+  content:"チェイン"!important;position:absolute!important;left:12px!important;right:12px!important;top:-14px!important;
+  height:24px!important;line-height:24px!important;padding:0!important;margin:0!important;
+  border-radius:12px!important;background:#ff4e91!important;color:#fff!important;
+  font-size:11px!important;font-weight:900!important;text-align:center!important;white-space:nowrap!important;
+}
+.side>.panel:nth-child(2) .pt{display:none!important}
+.chainNum{
+  display:block!important;width:100%!important;text-align:center!important;
+  font-size:25px!important;line-height:1!important;
+  font-family:"Hiragino Maru Gothic ProN","Arial Rounded MT Bold",sans-serif!important;font-weight:900!important;
+}
+.maxLabel{
+  position:absolute!important;left:-3px!important;top:81px!important;width:105px!important;height:64px!important;
+  padding:17px 4px 4px!important;border:3px solid #fff!important;border-radius:16px!important;
+  background:linear-gradient(180deg,#245ab0,#17377a)!important;box-shadow:0 4px 0 #0e2b68!important;
+  font-size:0!important;text-align:center!important;
+}
+.maxLabel:before{
+  content:"れんさ"!important;position:absolute!important;left:12px!important;right:12px!important;top:-14px!important;
+  height:24px!important;line-height:24px!important;border-radius:12px!important;
+  background:#ff4e91!important;color:#fff!important;font-size:11px!important;font-weight:900!important;text-align:center!important;
+}
+.maxLabel b{
+  display:block!important;width:100%!important;text-align:center!important;font-size:22px!important;line-height:1!important;
+  color:#ffe518!important;font-family:"Hiragino Maru Gothic ProN","Arial Rounded MT Bold",sans-serif!important;font-weight:900!important;
+  -webkit-text-stroke:.7px #d44723!important;text-shadow:0 2px 0 #9c2e22!important;
+}
+.maxLabel b:after{content:"れんさ!"!important;font-size:10px!important;margin-left:2px!important}
+.mascot{
+  position:absolute!important;left:-12px!important;bottom:2px!important;
+  width:175px!important;height:250px!important;border:0!important;background:transparent!important;
+  box-shadow:none!important;overflow:visible!important;pointer-events:none!important;
+}
+.mascot #poyona{overflow:visible!important;background:transparent!important}
+.mascot .poyona-action-img{
+  width:170%!important;height:170%!important;left:50%!important;top:50%!important;
+  transform:translate(-50%,-50%)!important;object-fit:contain!important;
+}
+.controls{
+  display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:5px!important;margin-top:1px!important;
+}
+.controls button{
+  height:49px!important;border-radius:16px!important;font-size:22px!important;
+}
+.controls .soft,.controls .hard{grid-column:span 2!important;font-size:13px!important}
+.hint{font-size:8px!important;white-space:nowrap!important;overflow:hidden!important}
+@media(max-width:390px){
+  .top{min-height:82px!important}
+  .logo{font-size:31px!important}
+  .sub{top:40px!important;width:116px!important}
+  .score{left:4px!important;top:89px!important;width:96px!important;min-width:96px!important}
+  .gameRow{height:470px!important;min-height:470px!important}
+  .wellShell{left:106px!important;top:-62px!important;width:198px!important}
+  .side>.panel:first-child{right:4px!important;top:-55px!important;width:40px!important;height:84px!important}
+  .nextCard canvas{width:30px!important;height:42px!important}
+  .side>.panel:nth-child(2){left:4px!important;top:82px!important;width:96px!important}
+  .maxLabel{width:96px!important}
+  .mascot{left:-14px!important;width:165px!important;height:235px!important}
+  .controls button{height:46px!important;font-size:20px!important}
+}
+</style></head><body><script>(async()=>{const r=await fetch('./poyopoyo-v13.html?v=20260826-v17base',{cache:'no-store'});let h=await r.text();h=h.replace('CHAIN PUZZLE · v13','CHAIN PUZZLE');h=h.replace('@keyframes poyocharBounce{45%{transform:translateY(-5px) scale(1.04)}}','@keyframes poyocharBounce{0%,100%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) translateY(-5px) scale(1.04)}}');h=h.replace('function character(action,hold=700)','function character(action,hold=1400)');h=h.replace("character('rotate');","character('rotate',1200);");h=h.replace(",850);sound('clear',n)",",1600);sound('clear',n)");h=h.replace('await sleep(120);let removed=0;','await sleep(480);let removed=0;');h=h.replace('await sleep(170);gravity();draw();await sleep(125)','await sleep(520);gravity();draw();await sleep(320)');h=h.replace('function lock(){if(!active)return;for(const p of cells()){if(p.y<0){end();return}board[p.y][p.x]=p.c}active=null;resolve()}','async function lock(){if(!active)return;for(const p of cells()){if(p.y<0){end();return}board[p.y][p.x]=p.c}active=null;draw();await sleep(140);gravity();draw();await sleep(120);resolve()}');const arcade=`<style id="arcade-ui-v4">body{background:radial-gradient(circle at 13% 14%,#fff 0 3.5%,transparent 3.8%),radial-gradient(circle at 87% 24%,#fff 0 4.5%,transparent 4.8%),linear-gradient(180deg,#35baf5 0%,#75d8ff 58%,#b9efff 76%,#7fd66f 100%)!important}.wrap{position:relative;width:min(455px,100%);gap:7px}.top{min-height:92px;align-items:flex-start;padding:4px 4px 0}.logo{font-size:40px;letter-spacing:-4px;filter:saturate(1.15);text-shadow:0 3px 0 #fff,0 6px 0 #2453a2,0 9px 14px #17488577}.sub{font-size:10px;margin-left:4px}.score{position:absolute;z-index:8;left:2px;top:105px;width:92px;min-width:92px;text-align:center;border-radius:17px;padding:5px 5px 7px}.score:before{content:'スコア';display:block;margin:-15px 3px 3px;padding:3px 5px;border-radius:12px;background:#ff4e91;color:#fff;font-size:11px;font-weight:1000}.score small{display:none}.score b{font-size:20px}.gameRow{position:relative;display:block;margin-left:0;min-height:520px}.wellShell{position:relative;width:72%;margin-left:auto;padding:6px;border-radius:17px;background:linear-gradient(#b9eaff,#75bdf6);box-shadow:0 6px 0 #245ca4,0 10px 18px #22578855}.well{border-radius:7px;border-color:#0c4d91;background:linear-gradient(180deg,#073a76,#062759 62%,#041b42)}.side{position:static}.side>.panel:first-child{position:absolute;z-index:8;right:0;top:-78px;width:82px;border-radius:14px;padding:5px 7px;background:linear-gradient(#1d65ad,#124682)}.side>.panel:first-child .pt{font-size:10px;color:#fff;margin-bottom:2px}.nextWrap{display:block}.nextCard{border:0;background:transparent;padding:0}.nextCard:nth-child(n+2){display:none!important}.nextCard small{display:none}.nextCard canvas{width:58px;height:44px;object-fit:contain}.side>.panel:nth-child(2){position:absolute;z-index:7;left:4px;top:98px;width:90px;border-radius:16px;padding:7px 4px}.side>.panel:nth-child(2):before{content:'チェイン';display:block;margin:-16px 2px 4px;padding:3px;border-radius:12px;background:#ff4e91;color:#fff;font-size:10px;font-weight:1000}.side>.panel:nth-child(2) .pt{display:none}.chainNum{font-size:25px}.maxLabel{font-size:8px}.mascot{position:absolute;z-index:6;left:-8px;bottom:8px;width:150px;height:285px!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible;pointer-events:none!important}.mascot #poyona,.mascot .poyona-action-img{pointer-events:none!important}.mascot #poyona{background:transparent!important;overflow:visible}.mascot .poyona-action-img{width:185%;height:185%;filter:drop-shadow(0 4px 3px #2464a455)}.controls{position:relative;z-index:20}.controls button{position:relative;z-index:21}.chainPop{font-size:31px;color:#fff328;text-shadow:-2px -2px #fff,2px -2px #fff,-2px 2px #fff,2px 2px #fff,0 5px #e9474f,0 8px 12px #0008}@media(max-width:390px){.top{min-height:84px}.logo{font-size:34px}.score{top:97px;width:82px;min-width:82px}.gameRow{min-height:470px}.wellShell{width:73%}.side>.panel:first-child{top:-72px;width:76px}.nextCard canvas{width:52px;height:39px}.side>.panel:nth-child(2){left:2px;width:79px;top:90px}.mascot{left:-10px;width:136px;height:250px!important}.mascot .poyona-action-img{width:180%;height:180%}}</style>`;h=h.replace('</head>',arcade+'</head>');h=h.replace('</body>','<audio id="poyoBgm" src="./assets/20260519090952_64230f82_Candy_Sky_Parade__1_.mp3" loop preload="auto"></audio><script>const poyoBgm=document.getElementById("poyoBgm");poyoBgm.volume=.38;document.getElementById("start").addEventListener("click",()=>{poyoBgm.currentTime=0;poyoBgm.play().catch(()=>{})});<\/script></body>');document.open();document.write(h);document.close()})().catch(()=>{document.body.innerHTML='<p style="font-family:sans-serif;padding:24px">v17の読み込みに失敗しました。</p>'})</script></body></html>
