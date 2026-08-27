@@ -1,9 +1,0 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>ぽよぽよ v18</title></head><body><script>
-(async()=>{
-  const r=await fetch('./poyopoyo-v17.html?v=20260827-system17',{cache:'no-store'});
-  let h=await r.text();
-  h=h.replace('CHAIN PUZZLE · v17','CHAIN PUZZLE · v18');
-  h=h.replace('</body>','<link rel="stylesheet" href="./poyopoyo-ui-v18.css?v=20260827-ui18b"></body>');
-  document.open();document.write(h);document.close();
-})().catch(()=>{document.body.innerHTML='<p style="font-family:sans-serif;padding:24px">v18の読み込みに失敗しました。</p>'});
-</script></body></html>
