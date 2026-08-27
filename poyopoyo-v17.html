@@ -1,17 +1,15 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>ぽよぽよ v17</title></head><body><script>
-(async()=>{
-  const r=await fetch('./poyopoyo-v13.html?v=20260827-layoutbase4',{cache:'no-store'});
-  let h=await r.text();
-  h=h.replace('CHAIN PUZZLE · v13','CHAIN PUZZLE · v20');
-  h=h.replace('@keyframes poyocharBounce{45%{transform:translateY(-5px) scale(1.04)}}','@keyframes poyocharBounce{0%,100%{transform:translate(-50%,-50%) scale(1)}45%{transform:translate(-50%,-50%) translateY(-5px) scale(1.04)}}');
-  h=h.replace('function character(action,hold=700)','function character(action,hold=1400)');
-  h=h.replace("character('rotate');","character('rotate',1200);");
-  h=h.replace(",850);sound('clear',n)",",1600);sound('clear',n)");
-  h=h.replace('await sleep(120);let removed=0;','await sleep(480);let removed=0;');
-  h=h.replace('await sleep(170);gravity();draw();await sleep(125)','await sleep(520);gravity();draw();await sleep(320)');
-  h=h.replace('function lock(){if(!active)return;for(const p of cells()){if(p.y<0){end();return}board[p.y][p.x]=p.c}active=null;resolve()}','async function lock(){if(!active)return;for(const p of cells()){if(p.y<0){end();return}board[p.y][p.x]=p.c}active=null;draw();await sleep(140);gravity();draw();await sleep(120);resolve()}');
-  h=h.replace('</body>',"<style id=\"poyopoyo-ui-layer-v20\">\n/* UI ONLY: gameplay JS below is unchanged */\nbody{padding:max(2px,env(safe-area-inset-top)) 4px max(4px,env(safe-area-inset-bottom))!important;overflow:hidden!important}\n.wrap{width:min(100%,520px)!important;height:calc(100dvh - max(2px,env(safe-area-inset-top)) - max(4px,env(safe-area-inset-bottom)))!important;min-height:0!important;display:grid!important;grid-template-rows:60px minmax(0,1fr) 100px 12px 30px!important;gap:3px!important;overflow:hidden!important}\n.top{height:60px!important;min-height:0!important;padding:1px 3px 0!important;align-items:flex-start!important}.logo{font-size:31px!important}.sub{font-size:8px!important;margin-top:1px!important}\n.gameRow{position:relative!important;display:block!important;height:100%!important;min-height:0!important;margin:0!important}\n.wellShell{position:absolute!important;left:26.5%!important;top:0!important;width:53%!important;height:100%!important;max-height:none!important;padding:5px!important;border-radius:18px!important}\n.well{width:100%!important;height:100%!important;aspect-ratio:auto!important}.well canvas{width:100%!important;height:100%!important}\n.score{left:.5%!important;top:2px!important;width:24%!important;min-width:0!important}.score b{font-size:23px!important}\n.side>.panel:first-child{right:.5%!important;top:0!important;width:19%!important;min-width:0!important;height:122px!important}\n.nextCard canvas{width:60px!important;height:78px!important;max-width:100%!important}\n.side>.panel:nth-child(2){left:.5%!important;top:98px!important;width:24%!important;height:64px!important}.maxLabel{top:72px!important;height:62px!important}\n.mascot{left:-2%!important;top:auto!important;bottom:0!important;width:31%!important;height:42%!important;min-height:145px!important}.mascot .poyona-action-img{width:168%!important;height:168%!important}\n.controls{height:100px!important;grid-template-rows:45px 49px!important;gap:6px!important;margin:0!important}.controls button{height:auto!important;min-height:0!important}.hint{height:12px!important;line-height:12px!important;font-size:8px!important;white-space:nowrap!important;overflow:hidden!important}.home{height:30px!important;padding:4px!important}\n@media(max-height:720px){.wrap{grid-template-rows:54px minmax(0,1fr) 92px 11px 28px!important}.top{height:54px!important}.logo{font-size:28px!important}.controls{height:92px!important;grid-template-rows:41px 45px!important}.home{height:28px!important}}\n</style></body>");
-  h=h.replace('</body>','<audio id="poyoBgm" src="./assets/20260519090952_64230f82_Candy_Sky_Parade__1_.mp3" loop preload="auto"></audio><script>const poyoBgm=document.getElementById("poyoBgm");poyoBgm.volume=.38;document.getElementById("start")?.addEventListener("click",()=>{poyoBgm.currentTime=0;poyoBgm.play().catch(()=>{})});<\/script></body>');
-  document.open();document.write(h);document.close();
-})().catch(()=>{document.body.innerHTML='<p style="font-family:sans-serif;padding:24px">v17の読み込みに失敗しました。</p>'});
-</script></body></html>
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>ぽよぽよ</title>
+<link rel="stylesheet" href="./poyopoyo-ui.css?v=20260827-v21">
+</head>
+<body>
+<div class="wrap"><div class="top"><div><div class="logo"><i>ぽ</i><i>よ</i><i>ぽ</i><i>よ</i></div><div class="sub">CHAIN PUZZLE · v21</div></div><div class="score"><small>SCORE</small><b id="score">0</b></div></div><div class="gameRow"><div class="wellShell"><div class="well" id="well"><canvas id="game" width="300" height="600"></canvas><div class="chainPop" id="chainPop"></div></div></div><div class="side"><div class="panel"><div class="pt">NEXT</div><div class="nextWrap"><div class="nextCard"><small>NEXT</small><canvas id="next1" width="52" height="72"></canvas></div><div class="nextCard"><small>NEXT 2</small><canvas id="next2" width="52" height="72"></canvas></div></div></div><div class="panel"><div class="pt">CHAIN</div><div class="chainNum" id="chainNum">0</div><div class="maxLabel">MAX <b id="maxChain">0</b></div></div><div class="panel mascot"><div id="poyona" aria-label="ポヨナ"></div></div></div></div><div class="controls"><button data-act="left">◀</button><button class="rot" data-act="rotL">↺</button><button class="rot" data-act="rotR">↻</button><button data-act="right">▶</button><button class="soft" data-act="down">▼ はやく落とす</button><button class="hard" data-act="hard">一気に落下</button></div><div class="hint">左右移動 / ↺↻で回転 / ▼長押しで高速落下 / 盤面タップで右回転</div><a class="home" href="./">ミニゲームパックへ戻る</a></div><div class="overlay" id="overlay"><div class="card"><h1>ぽよぽよ</h1><p>2個1組のぽよを動かして、<b>同じ色を4個以上</b>つなげよう。<br>NEXT 2を見ながら連鎖を組もう！</p><button id="start">スタート！</button><a class="home" href="./">ミニゲームパックへ戻る</a></div></div>
+<audio id="poyoBgm" src="./assets/20260519090952_64230f82_Candy_Sky_Parade__1_.mp3" loop preload="auto"></audio>
+<script src="./poyona-character-v3.js?v=20260826-char3"></script>
+<script src="./poyopoyo-system.js?v=20260827-v21"></script>
+</body>
+</html>
