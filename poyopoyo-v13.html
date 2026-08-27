@@ -13,54 +13,276 @@ body{padding:max(6px,env(safe-area-inset-top)) 7px max(10px,env(safe-area-inset-
 .side{display:flex;flex-direction:column;gap:6px}.panel{border:3px solid #fff;border-radius:15px;background:linear-gradient(180deg,#245ab0,#17377a);box-shadow:0 4px 0 #0e2b68,0 7px 11px #22558a55;padding:6px;text-align:center}.pt{font-size:9px;font-weight:1000;color:#cdeaff;letter-spacing:.08em;margin-bottom:2px}.nextWrap{display:grid;grid-template-columns:1fr 1fr;gap:4px}.nextCard{background:#0c275c;border:2px solid #68aaf1;border-radius:11px;padding:3px 1px}.nextCard small{display:block;font-size:7px;font-weight:1000;color:#a9d6ff}.nextCard canvas{display:block;width:42px;height:57px;margin:auto}.chainNum{font-size:28px;font-weight:1000;color:#fff13a;line-height:1;text-shadow:0 2px #b63845}.maxLabel{font-size:8px;color:#cdeaff;font-weight:900;margin-top:3px}.maxLabel b{color:#fff}.mascot{height:151px;position:relative;overflow:hidden;background:#fff;border-color:#fff;padding:0}#poyona{position:absolute;inset:0;z-index:1;overflow:hidden;border-radius:11px;background:#fff}.poyona-action-img{width:126%;height:126%;max-width:none;display:block;object-fit:contain;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}.poyona-pop{animation:poyocharBounce .52s ease}@keyframes poyocharBounce{45%{transform:translateY(-5px) scale(1.04)}}
 .controls{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.controls button{height:55px;border:3px solid #fff;border-radius:18px;background:linear-gradient(#fff,#dff1ff);color:#1c4b9b;font-size:24px;font-weight:1000;box-shadow:0 5px 0 #2861aa;touch-action:none}.controls button:active,.controls button.pressed{transform:translateY(3px);box-shadow:0 2px 0 #2861aa;background:#fff8a9}.controls .rot{color:#8b48c7}.controls .soft{grid-column:span 2;font-size:14px;background:linear-gradient(#fff,#d9fff2);color:#167866}.controls .hard{grid-column:span 2;font-size:14px;background:linear-gradient(#fff8b2,#ffd03d);color:#914e00;box-shadow:0 5px 0 #d09515}.hint{text-align:center;color:#194a80;font-size:9px;font-weight:900;text-shadow:0 1px #fff}.home{display:block;text-decoration:none;text-align:center;color:#fff;background:#174c94d9;border:2px solid #fff;border-radius:14px;padding:8px;font-size:11px;font-weight:1000;box-shadow:0 3px 0 #123668}.overlay{position:fixed;z-index:20;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;background:#173c83e8;backdrop-filter:blur(7px)}.card{width:min(350px,100%);padding:22px;text-align:center;border:4px solid #fff;border-radius:25px;background:linear-gradient(#54c7ff,#4d76d7 58%,#654ec8);box-shadow:0 10px 30px #09265b99}.card h1{font-size:43px;margin:0;color:#fff13e;text-shadow:0 4px #e14c76}.card p{line-height:1.65;font-weight:700}.card button{width:100%;border:3px solid #fff;border-radius:17px;padding:13px;font-size:18px;font-weight:1000;color:#7b3b00;background:linear-gradient(#fffca4,#ffd532);box-shadow:0 5px 0 #d39b14}.card .home{margin-top:10px}.flash{animation:flash .22s ease}@keyframes flash{50%{filter:brightness(1.55)}}
 @media(max-width:380px){.gameRow{grid-template-columns:minmax(0,1fr) 103px}.logo{font-size:28px}.score{min-width:103px}.mascot{height:139px}.controls button{height:51px}}
-</style><style id="ref-layout-20260827">
-html,body{overscroll-behavior:none;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
-body{touch-action:manipulation!important;background:
-radial-gradient(circle at 16% 10%,#fff 0 2.3%,transparent 2.7%),
-radial-gradient(circle at 87% 17%,#fff 0 2.7%,transparent 3.1%),
-linear-gradient(180deg,#39bdf6 0%,#76d8ff 58%,#b8efff 78%,#84d873 100%)!important}
-.wrap{position:relative!important;width:min(430px,100%)!important;gap:5px!important;overflow:hidden!important}
-.top{min-height:82px!important;align-items:flex-start!important;padding:2px 3px 0!important}
-.logo{font-size:35px!important;letter-spacing:-4px!important}
-.sub{font-size:9px!important;margin-left:4px!important}
-.gameRow{position:relative!important;display:block!important;min-height:446px!important;margin:0!important;touch-action:none!important}
-.wellShell{position:absolute!important;z-index:4!important;left:116px!important;top:2px!important;width:218px!important;margin:0!important;padding:5px!important;border-radius:17px!important;background:linear-gradient(#c4efff,#79c8fa)!important;box-shadow:0 6px 0 #245ca4,0 10px 18px #22578855!important}
-.well{border-radius:8px!important;border-color:#0c4d91!important;background:linear-gradient(180deg,#073a76,#062759 62%,#041b42)!important}
-.score{position:absolute!important;z-index:8!important;left:4px!important;top:96px!important;width:104px!important;min-width:104px!important;text-align:center!important;border-radius:18px!important;padding:5px 5px 7px!important}
-.score:before{content:'スコア';display:block;margin:-15px 4px 4px;padding:3px 5px;border-radius:12px;background:#ff4e91;color:#fff;font-size:10px;font-weight:1000}
-.score small{display:none!important}.score b{font-size:21px!important}
-.side{position:static!important}
-.side>.panel:first-child{position:absolute!important;z-index:9!important;right:3px!important;top:2px!important;width:84px!important;height:116px!important;border-radius:16px!important;padding:7px 5px!important;background:linear-gradient(#1d65ad,#124682)!important}
-.side>.panel:first-child .pt{font-size:10px!important;color:#fff!important;margin-bottom:4px!important}
-.nextWrap{display:flex!important;justify-content:center!important;align-items:center!important}
-.nextCard{border:0!important;background:transparent!important;padding:0!important}
+</style><style id="reference-layout-clean">
+html,body{
+  overscroll-behavior:none;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+body{
+  touch-action:manipulation!important;
+  background:
+    radial-gradient(circle at 18% 10%,#fff 0 2%,transparent 2.4%),
+    radial-gradient(circle at 84% 20%,#fff 0 2.4%,transparent 2.8%),
+    linear-gradient(180deg,#55c9ff 0%,#9be6ff 62%,#c8f2ff 78%,#8ade79 100%)!important;
+}
+.wrap{
+  position:relative!important;
+  width:min(430px,100%)!important;
+  margin:0 auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  gap:6px!important;
+  overflow:hidden!important;
+}
+.top{
+  min-height:84px!important;
+  align-items:flex-start!important;
+  padding:2px 4px 0!important;
+}
+.logo{
+  font-size:35px!important;
+  letter-spacing:-4px!important;
+}
+.sub{
+  font-size:9px!important;
+  margin-left:4px!important;
+}
+.score{
+  position:absolute!important;
+  z-index:10!important;
+  left:6px!important;
+  top:98px!important;
+  width:108px!important;
+  min-width:108px!important;
+  text-align:center!important;
+  border-radius:18px!important;
+  padding:5px 6px 7px!important;
+}
+.score:before{
+  content:'スコア';
+  display:block;
+  margin:-16px 4px 4px;
+  padding:3px 6px;
+  border-radius:12px;
+  background:#ff4e91;
+  color:#fff;
+  font-size:10px;
+  font-weight:1000;
+}
+.score small{display:none!important}
+.score b{font-size:22px!important}
+
+.gameRow{
+  position:relative!important;
+  display:block!important;
+  min-height:420px!important;
+  margin:0!important;
+  touch-action:none!important;
+}
+.wellShell{
+  position:absolute!important;
+  z-index:5!important;
+  left:29%!important;
+  top:2px!important;
+  width:48%!important;
+  margin:0!important;
+  padding:5px!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#f7fdff,#bfe7ff 55%,#84c6ff)!important;
+  box-shadow:0 6px 0 #28549a,0 10px 18px #22578855!important;
+}
+.well{
+  border-radius:8px!important;
+  border-color:#0c4d91!important;
+  background:linear-gradient(180deg,#073a76,#062759 62%,#041b42)!important;
+}
+
+.side{
+  position:static!important;
+  display:block!important;
+}
+.side>.panel:first-child{
+  position:absolute!important;
+  z-index:9!important;
+  right:1.5%!important;
+  top:2px!important;
+  width:20.5%!important;
+  min-width:76px!important;
+  height:118px!important;
+  border-radius:16px!important;
+  padding:7px 5px!important;
+  background:linear-gradient(#1d65ad,#124682)!important;
+}
+.side>.panel:first-child .pt{
+  font-size:10px!important;
+  color:#fff!important;
+  margin-bottom:4px!important;
+}
+.nextWrap{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+.nextCard{
+  border:0!important;
+  background:transparent!important;
+  padding:0!important;
+}
 .nextCard:nth-child(n+2){display:none!important}
 .nextCard small{display:none!important}
-.nextCard canvas{width:66px!important;height:78px!important}
-.side>.panel:nth-child(2){position:absolute!important;z-index:7!important;left:4px!important;top:112px!important;width:104px!important;height:72px!important;border-radius:16px!important;padding:9px 4px 5px!important}
-.side>.panel:nth-child(2):before{content:'チェイン';display:block;margin:-19px 3px 4px;padding:3px;border-radius:12px;background:#ff4e91;color:#fff;font-size:10px;font-weight:1000}
+.nextCard canvas{
+  width:66px!important;
+  height:78px!important;
+}
+
+.side>.panel:nth-child(2){
+  position:absolute!important;
+  z-index:8!important;
+  left:1.5%!important;
+  top:118px!important;
+  width:25%!important;
+  height:70px!important;
+  border-radius:16px!important;
+  padding:10px 4px 5px!important;
+}
+.side>.panel:nth-child(2):before{
+  content:'チェイン';
+  display:block;
+  margin:-20px 4px 4px;
+  padding:3px 4px;
+  border-radius:12px;
+  background:#ff4e91;
+  color:#fff;
+  font-size:10px;
+  font-weight:1000;
+}
 .side>.panel:nth-child(2) .pt{display:none!important}
-.chainNum{font-size:27px!important;line-height:1!important}
-.maxLabel{position:absolute!important;left:0!important;top:84px!important;width:104px!important;height:70px!important;border:3px solid #fff!important;border-radius:16px!important;background:linear-gradient(180deg,#245ab0,#17377a)!important;box-shadow:0 4px 0 #0e2b68!important;padding:18px 3px 3px!important;font-size:0!important;color:#fff!important}
-.maxLabel:before{content:'れんさ';position:absolute;left:10px;top:-13px;width:82px;padding:3px 0;border-radius:12px;background:#ff4e91;color:#fff;font-size:10px;font-weight:1000}
-.maxLabel b{font-size:22px!important;color:#fff13a!important}
-.maxLabel b:after{content:'れんさ!';font-size:12px!important;margin-left:2px;color:#fff13a!important}
-.mascot{position:absolute!important;z-index:6!important;left:-20px!important;bottom:0!important;width:156px!important;height:240px!important;border:0!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;pointer-events:none!important}
-.mascot #poyona,.mascot .poyona-action-img{pointer-events:none!important}
-.mascot #poyona{background:transparent!important;overflow:visible!important}
-.mascot .poyona-action-img{width:190%!important;height:190%!important;filter:drop-shadow(0 4px 3px #2464a455)}
-.controls{position:relative!important;z-index:20!important;touch-action:none!important;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
-.controls button{position:relative!important;z-index:21!important;touch-action:none!important;-webkit-user-select:none!important;user-select:none!important;-webkit-touch-callout:none!important}
+.chainNum{
+  font-size:26px!important;
+  line-height:1!important;
+}
+.maxLabel{
+  position:absolute!important;
+  left:0!important;
+  top:82px!important;
+  width:100%!important;
+  height:72px!important;
+  border:3px solid #fff!important;
+  border-radius:16px!important;
+  background:linear-gradient(180deg,#245ab0,#17377a)!important;
+  box-shadow:0 4px 0 #0e2b68!important;
+  padding:18px 3px 3px!important;
+  font-size:0!important;
+}
+.maxLabel:before{
+  content:'れんさ';
+  position:absolute;
+  left:10%;
+  top:-14px;
+  width:80%;
+  padding:3px 0;
+  border-radius:12px;
+  background:#ff4e91;
+  color:#fff;
+  font-size:10px;
+  font-weight:1000;
+}
+.maxLabel b{
+  font-size:22px!important;
+  color:#fff13a!important;
+}
+.maxLabel b:after{
+  content:'れんさ!';
+  margin-left:2px;
+  font-size:12px!important;
+  color:#fff13a!important;
+}
+
+.mascot{
+  position:absolute!important;
+  z-index:7!important;
+  left:-4%!important;
+  bottom:2px!important;
+  width:39%!important;
+  height:228px!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  pointer-events:none!important;
+}
+.mascot #poyona,
+.mascot .poyona-action-img{
+  pointer-events:none!important;
+}
+.mascot #poyona{
+  background:transparent!important;
+  overflow:visible!important;
+}
+.mascot .poyona-action-img{
+  width:188%!important;
+  height:188%!important;
+  filter:drop-shadow(0 4px 3px #2464a455);
+}
+
+.controls{
+  position:relative!important;
+  z-index:20!important;
+  touch-action:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+.controls button{
+  position:relative!important;
+  z-index:21!important;
+  touch-action:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+
 @media(max-width:390px){
-.top{min-height:76px!important}.logo{font-size:31px!important}
-.gameRow{min-height:408px!important}
-.wellShell{left:104px!important;width:198px!important}
-.score{left:3px!important;top:89px!important;width:93px!important;min-width:93px!important}
-.side>.panel:first-child{right:2px!important;width:76px!important;height:105px!important}
-.nextCard canvas{width:58px!important;height:68px!important}
-.side>.panel:nth-child(2){left:3px!important;top:105px!important;width:93px!important;height:67px!important}
-.maxLabel{width:93px!important;top:78px!important}.maxLabel:before{left:7px!important;width:75px!important}
-.mascot{left:-18px!important;width:142px!important;height:215px!important}.mascot .poyona-action-img{width:190%!important;height:190%!important}
+  .top{min-height:76px!important}
+  .logo{font-size:31px!important}
+  .score{
+    left:4px!important;
+    top:91px!important;
+    width:94px!important;
+    min-width:94px!important;
+  }
+  .gameRow{min-height:382px!important}
+  .wellShell{
+    left:28.5%!important;
+    width:49%!important;
+  }
+  .side>.panel:first-child{
+    right:1%!important;
+    width:20%!important;
+    min-width:70px!important;
+    height:108px!important;
+  }
+  .nextCard canvas{
+    width:58px!important;
+    height:70px!important;
+  }
+  .side>.panel:nth-child(2){
+    left:1%!important;
+    top:106px!important;
+    width:25%!important;
+    height:66px!important;
+  }
+  .maxLabel{
+    top:77px!important;
+    height:68px!important;
+  }
+  .mascot{
+    left:-5%!important;
+    width:40%!important;
+    height:205px!important;
+  }
 }
 </style></head><body>
 <div class="wrap"><div class="top"><div><div class="logo"><i>ぽ</i><i>よ</i><i>ぽ</i><i>よ</i></div><div class="sub">CHAIN PUZZLE · v13</div></div><div class="score"><small>SCORE</small><b id="score">0</b></div></div><div class="gameRow"><div class="wellShell"><div class="well" id="well"><canvas id="game" width="300" height="600"></canvas><div class="chainPop" id="chainPop"></div></div></div><div class="side"><div class="panel"><div class="pt">NEXT</div><div class="nextWrap"><div class="nextCard"><small>NEXT</small><canvas id="next1" width="52" height="72"></canvas></div><div class="nextCard"><small>NEXT 2</small><canvas id="next2" width="52" height="72"></canvas></div></div></div><div class="panel"><div class="pt">CHAIN</div><div class="chainNum" id="chainNum">0</div><div class="maxLabel">MAX <b id="maxChain">0</b></div></div><div class="panel mascot"><div id="poyona" aria-label="ポヨナ"></div></div></div></div><div class="controls"><button data-act="left">◀</button><button class="rot" data-act="rotL">↺</button><button class="rot" data-act="rotR">↻</button><button data-act="right">▶</button><button class="soft" data-act="down">▼ はやく落とす</button><button class="hard" data-act="hard">一気に落下</button></div><div class="hint">左右移動 / ↺↻で回転 / ▼長押しで高速落下 / 盤面タップで右回転</div><a class="home" href="./">ミニゲームパックへ戻る</a></div><div class="overlay" id="overlay"><div class="card"><h1>ぽよぽよ</h1><p>2個1組のぽよを動かして、<b>同じ色を4個以上</b>つなげよう。<br>NEXT 2を見ながら連鎖を組もう！</p><button id="start">スタート！</button><a class="home" href="./">ミニゲームパックへ戻る</a></div></div>
