@@ -1,0 +1,175 @@
+/* ぽよぽよ v18 UI layer
+   Game logic is intentionally untouched. This file owns only layout / sizing / visual placement. */
+
+html,body{
+  width:100%;
+  min-height:100%;
+}
+body{
+  padding:max(2px,env(safe-area-inset-top)) 4px max(4px,env(safe-area-inset-bottom))!important;
+  overflow:hidden!important;
+}
+.wrap{
+  width:min(100%,520px)!important;
+  height:calc(100dvh - max(2px,env(safe-area-inset-top)) - max(4px,env(safe-area-inset-bottom)))!important;
+  min-height:620px!important;
+  display:grid!important;
+  grid-template-rows:66px minmax(0,1fr) 106px 14px 34px!important;
+  gap:4px!important;
+  overflow:hidden!important;
+}
+
+.top{
+  min-height:0!important;
+  height:66px!important;
+  padding:2px 4px 0!important;
+  align-items:flex-start!important;
+}
+.logo{
+  font-size:34px!important;
+  line-height:.94!important;
+}
+.sub{
+  font-size:8px!important;
+  margin-top:2px!important;
+}
+
+.gameRow{
+  position:relative!important;
+  min-height:0!important;
+  height:100%!important;
+  margin:0!important;
+  overflow:visible!important;
+}
+
+/* Main playfield: size from available game area, not from leftover page width. */
+.wellShell{
+  left:28.5%!important;
+  top:0!important;
+  width:50%!important;
+  max-width:none!important;
+  height:min(100%,calc((50vw - 8px) * 2.08))!important;
+  padding:5px!important;
+  border-width:4px!important;
+  border-radius:18px!important;
+}
+.well{
+  width:100%!important;
+  height:100%!important;
+  aspect-ratio:auto!important;
+}
+.well canvas{
+  width:100%!important;
+  height:100%!important;
+}
+
+/* Left information rail */
+.score{
+  left:1%!important;
+  top:2px!important;
+  width:24.5%!important;
+  min-width:0!important;
+  padding:5px 4px 6px!important;
+}
+.score b{font-size:24px!important}
+
+.side>.panel:nth-child(2){
+  left:1%!important;
+  top:104px!important;
+  width:24.5%!important;
+  height:66px!important;
+  padding:9px 4px 4px!important;
+}
+.chainNum{font-size:27px!important}
+.maxLabel{
+  top:75px!important;
+  height:65px!important;
+  padding-top:17px!important;
+}
+
+/* NEXT rail */
+.side>.panel:first-child{
+  right:.5%!important;
+  top:0!important;
+  width:19%!important;
+  min-width:0!important;
+  height:130px!important;
+  padding:6px 3px!important;
+}
+.nextCard canvas{
+  width:64px!important;
+  height:84px!important;
+  max-width:100%!important;
+}
+
+/* Existing character art only: no generated replacement. */
+.mascot{
+  left:-1.5%!important;
+  top:auto!important;
+  bottom:2px!important;
+  width:31%!important;
+  height:46%!important;
+  min-height:170px!important;
+}
+.mascot .poyona-action-img{
+  width:172%!important;
+  height:172%!important;
+}
+
+/* Controls occupy a fixed compact footer instead of leaving large dead space. */
+.controls{
+  height:106px!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,1fr)!important;
+  grid-template-rows:48px 52px!important;
+  gap:6px!important;
+  margin:0!important;
+}
+.controls button{
+  height:auto!important;
+  min-height:0!important;
+  border-radius:16px!important;
+  font-size:23px!important;
+}
+.controls .soft,.controls .hard{
+  font-size:13px!important;
+}
+.hint{
+  height:14px!important;
+  line-height:14px!important;
+  font-size:8px!important;
+  overflow:hidden!important;
+  white-space:nowrap!important;
+}
+.home{
+  height:34px!important;
+  padding:6px!important;
+  border-radius:12px!important;
+  font-size:10px!important;
+}
+
+/* Short phone viewports: preserve playfield first, then shrink chrome. */
+@media (max-height:740px){
+  .wrap{
+    min-height:0!important;
+    grid-template-rows:58px minmax(0,1fr) 96px 12px 30px!important;
+  }
+  .top{height:58px!important}
+  .logo{font-size:30px!important}
+  .wellShell{width:48%!important;left:29.5%!important}
+  .controls{height:96px!important;grid-template-rows:43px 47px!important}
+  .home{height:30px!important;padding:4px!important}
+  .mascot{height:42%!important;min-height:145px!important}
+}
+
+@media (max-width:390px){
+  .wrap{width:100%!important}
+  .wellShell{
+    left:28%!important;
+    width:50.5%!important;
+  }
+  .score,
+  .side>.panel:nth-child(2){width:24%!important}
+  .side>.panel:first-child{width:19.5%!important}
+  .mascot{width:30%!important}
+}
