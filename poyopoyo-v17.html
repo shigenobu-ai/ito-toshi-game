@@ -12,9 +12,9 @@ body{background:linear-gradient(180deg,#43c3f7 0%,#88deff 72%,#8dda79 100%);padd
 .scorePanel{top:32px}.chainPanel{top:112px}.rensaPanel{top:192px}
 .infoValue{font-weight:900;line-height:1;color:#fff;font-size:22px;text-shadow:0 2px 0 #153d78}
 .chainPanel .infoValue{color:#ffe81c}.rensaPanel .infoValue{color:#ffe81c;font-size:18px;-webkit-text-stroke:.55px #d94722;text-shadow:0 2px 0 #9f2d22}
-.wellShell{position:absolute;left:109px;top:0;width:228px;height:min(calc(100% - 3px),456px);padding:6px;border:4px solid #fff;border-radius:18px;background:linear-gradient(#d8f5ff,#69b3ec);box-shadow:0 6px 0 #28559c,0 12px 18px #24558b44}
+.wellShell{position:absolute;right:41px;top:0;width:228px;height:min(calc(100% - 3px),456px);padding:6px;border:4px solid #fff;border-radius:18px;background:linear-gradient(#d8f5ff,#69b3ec);box-shadow:0 6px 0 #28559c,0 12px 18px #24558b44}
 .well{position:relative;width:100%;height:100%;overflow:hidden;border-radius:9px;border:3px solid #124783;background:linear-gradient(180deg,#0a2f64,#061d45);box-shadow:inset 0 0 0 2px #03142d}
-.well canvas{width:100%;height:100%;display:block}
+.well canvas{display:block;width:100%;height:auto;aspect-ratio:1/2}
 .chainPop{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:4;font-size:32px;font-weight:1000;color:#fff329;text-shadow:-2px -2px #fff,2px -2px #fff,-2px 2px #fff,2px 2px #fff,0 5px #e94a50;opacity:0;pointer-events:none}
 .chainPop.show{animation:pop .7s cubic-bezier(.2,1.3,.2,1)}
 @keyframes pop{0%{opacity:0;transform:scale(.3)}20%{opacity:1;transform:scale(1.2)}65%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.08)}}
@@ -33,7 +33,7 @@ body{background:linear-gradient(180deg,#43c3f7 0%,#88deff 72%,#8dda79 100%);padd
 .overlay{position:fixed;z-index:30;inset:0;display:flex;align-items:center;justify-content:center;padding:22px;background:#173c83e8;backdrop-filter:blur(7px)}
 .card{width:min(350px,100%);padding:22px;text-align:center;border:4px solid #fff;border-radius:25px;background:linear-gradient(#54c7ff,#4d76d7 58%,#654ec8);box-shadow:0 10px 30px #09265b99}
 .card h1{font-size:42px;margin:0;color:#fff13e;text-shadow:0 4px #e14c76}.card p{line-height:1.65;font-weight:700}.card button{width:100%;border:3px solid #fff;border-radius:17px;padding:13px;font-size:18px;font-weight:1000;color:#7b3b00;background:linear-gradient(#fffca4,#ffd532);box-shadow:0 5px 0 #d39b14}.card .home{position:static;display:block;height:auto;margin-top:10px;padding:8px}
-@media(max-width:390px){.wellShell{left:102px;width:210px}.infoPanel{width:90px}.mascot{width:154px;height:210px}.nextPanel{width:31px;height:64px}.nextCard canvas{width:24px;height:35px}.controls button{height:42px;font-size:19px}}</style></head><body>
+@media(max-width:390px){.wellShell{right:38px;width:210px}.infoPanel{width:90px}.mascot{width:154px;height:210px}.nextPanel{width:31px;height:64px}.nextCard canvas{width:24px;height:35px}.controls button{height:42px;font-size:19px}}</style></head><body>
 <div class="wrap">
   <div class="logo"><i>ぽ</i><i>よ</i><i>ぽ</i><i>よ</i></div><div class="sub">CHAIN PUZZLE</div>
   <div class="stageArea">
