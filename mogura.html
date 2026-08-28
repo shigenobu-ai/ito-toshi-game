@@ -21,7 +21,7 @@ body{min-height:100dvh;padding:max(18px,env(safe-area-inset-top)) 16px max(18px,
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 12px;margin-top:58px}
 .hole{position:relative;aspect-ratio:1.15/1;overflow:hidden}
 .dirt{position:absolute;left:7%;right:7%;bottom:2%;height:33%;background:#26160f;border-radius:50%;box-shadow:inset 0 8px 10px #0008,0 3px 0 #7b4a2a}
-.mole{position:absolute;left:50%;bottom:-72%;width:68%;height:82%;transform:translateX(-50%);transition:bottom .11s ease-out;cursor:pointer}
+.mole{position:absolute;left:50%;bottom:-72%;width:68%;height:82%;transform:translateX(-50%);transition:bottom .11s ease-out;cursor:pointer}.hammer{position:fixed;z-index:20;width:74px;height:74px;pointer-events:none;transform:translate(-50%,-50%) rotate(-24deg);opacity:0}.hammer.show{opacity:1;animation:bonk .18s ease-out}.hammer-head{position:absolute;left:18px;top:5px;width:42px;height:30px;border-radius:16px;background:linear-gradient(#ff7ab5,#ff4f9b);border:3px solid #fff;box-shadow:0 3px 0 #b62f72}.hammer-head:before,.hammer-head:after{content:"";position:absolute;top:5px;width:10px;height:14px;border-radius:50%;background:#fff8}.hammer-head:before{left:6px}.hammer-head:after{right:6px}.hammer-stick{position:absolute;left:34px;top:31px;width:10px;height:38px;border-radius:6px;background:linear-gradient(#f0cc8c,#a76d33);transform:rotate(-6deg);transform-origin:top}@keyframes bonk{0%{transform:translate(-50%,-50%) rotate(-60deg) scale(.9)}55%{transform:translate(-50%,-50%) rotate(12deg) scale(1.05)}100%{transform:translate(-50%,-50%) rotate(-8deg) scale(1)}}
 .hole.up .mole{bottom:12%}
 .face{position:absolute;inset:0;border-radius:45% 45% 40% 40%;background:linear-gradient(#78502f,#4f2e1e);border:2px solid #2e1b13;box-shadow:inset 0 -7px 0 #3a2116}
 .ear{position:absolute;top:8%;width:28%;height:28%;background:#5d3b27;border:2px solid #2e1b13;border-radius:50%}
@@ -65,7 +65,7 @@ button{background:#fff;color:#102016}.home{background:#23372a;color:#fff}
   </div>
 </main>
 
-<div id="overlay" class="overlay">
+<div id="hammer" class="hammer"><div class="hammer-head"></div><div class="hammer-stick"></div></div><div id="overlay" class="overlay">
   <div class="card">
     <h1>モグラ叩き</h1>
     <p>出てきたモグラをタップ！<br><strong>30秒で何匹叩けるか</strong>挑戦。</p>
@@ -77,49 +77,50 @@ button{background:#fff;color:#102016}.home{background:#23372a;color:#fff}
 <script>
 (()=>{
 const grid=document.getElementById('grid'),scoreEl=document.getElementById('score'),timeEl=document.getElementById('time'),comboEl=document.getElementById('combo'),overlay=document.getElementById('overlay');
-let running=false,score=0,combo=0,best=Number(localStorage.getItem('mogura-best')||0),active=-1,hideTimer=0,nextTimer=0,endAt=0,raf=0;
+let running=false,score=0,combo=0,best=Number(localStorage.getItem('mogura-best')||0),active=[],hideTimers=[],nextTimer=0,endAt=0,raf=0;
 const holes=[];
 for(let i=0;i<9;i++){
   const hole=document.createElement('div');
   hole.className='hole';
-  hole.innerHTML='<div class="mole"><div class="ear l"></div><div class="ear r"></div><div class="face"><div class="eye l"></div><div class="eye r"></div><div class="nose"></div><div class="tooth l"></div><div class="tooth r"></div></div></div><div class="dirt"></div>';
+  hole.innerHTML='<div class="mole"><div class="ear l"></div><div class="ear r"></div><div class="face"><div class="eye l"></div><div class="eye r"></div><div class="snout"></div><div class="nose"></div><div class="tooth l"></div><div class="tooth r"></div></div></div><div class="dirt"></div>';
   hole.addEventListener('pointerdown',e=>{e.preventDefault();hit(i,hole)});
   grid.appendChild(hole);holes.push(hole);
 }
-function showMole(){
+function hideOne(idx,wasHit){const k=active.indexOf(idx);if(k<0)return;active.splice(k,1);holes[idx].classList.remove('up','hit');if(!wasHit&&running){combo=0;comboEl.textContent=''}}
+function showMoles(){
   if(!running)return;
-  if(active>=0)hideMole(false);
-  let idx;
-  do{idx=Math.floor(Math.random()*holes.length)}while(idx===active&&holes.length>1);
-  active=idx;holes[idx].classList.add('up');
   const elapsed=30000-Math.max(0,endAt-performance.now());
-  const visible=Math.max(360,760-elapsed/70);
-  hideTimer=setTimeout(()=>{hideMole(false);scheduleNext()},visible);
-}
-function hideMole(wasHit){
-  clearTimeout(hideTimer);
-  if(active>=0){
-    const h=holes[active];h.classList.remove('up','hit');
-    if(!wasHit&&running){combo=0;comboEl.textContent=''}
+  const doubleChance=elapsed>7000?0.28:0.14;
+  const count=Math.random()<doubleChance?2:1;
+  const choices=holes.map((_,i)=>i).filter(i=>!active.includes(i));
+  for(let n=0;n<count&&choices.length;n++){
+    const pick=Math.floor(Math.random()*choices.length),idx=choices.splice(pick,1)[0];
+    active.push(idx);holes[idx].classList.add('up');
+    const visible=Math.max(340,780-elapsed/75)+Math.random()*220;
+    const tm=setTimeout(()=>{hideOne(idx,false);if(active.length===0)scheduleNext()},visible);
+    hideTimers.push(tm);
   }
-  active=-1;
 }
+function hideAll(wasHit){hideTimers.forEach(clearTimeout);hideTimers=[];for(const idx of [...active])hideOne(idx,wasHit);active=[]}
 function scheduleNext(){
   if(!running)return;
   clearTimeout(nextTimer);
   const elapsed=30000-Math.max(0,endAt-performance.now());
-  const delay=Math.max(120,360-elapsed/130);
-  nextTimer=setTimeout(showMole,delay+Math.random()*150);
+  const base=Math.max(110,420-elapsed/115);
+  let delay=base+Math.random()*420;
+  if(Math.random()<0.22)delay+=500+Math.random()*650;
+  nextTimer=setTimeout(showMoles,delay);
 }
 function hit(i,hole){
-  if(!running||i!==active||!hole.classList.contains('up')||hole.classList.contains('hit'))return;
+  if(!running||!active.includes(i)||!hole.classList.contains('up')||hole.classList.contains('hit'))return;
   hole.classList.add('hit');
+  const r=hole.getBoundingClientRect(),hammer=document.getElementById('hammer');hammer.style.left=(r.left+r.width*.58)+'px';hammer.style.top=(r.top+r.height*.28)+'px';hammer.classList.remove('show');void hammer.offsetWidth;hammer.classList.add('show');setTimeout(()=>hammer.classList.remove('show'),190);
   score++;combo++;
   scoreEl.textContent=score;
   comboEl.textContent=combo>=3?combo+' COMBO!':'';
   const p=document.createElement('div');p.className='pop';p.textContent='+1';hole.appendChild(p);setTimeout(()=>p.remove(),450);
   navigator.vibrate?.(12);
-  hideMole(true);setTimeout(scheduleNext,80);
+  setTimeout(()=>{hideOne(i,true);if(active.length===0)scheduleNext()},90);
 }
 function tick(t){
   if(!running)return;
@@ -129,17 +130,17 @@ function tick(t){
   raf=requestAnimationFrame(tick);
 }
 function reset(){
-  clearTimeout(hideTimer);clearTimeout(nextTimer);cancelAnimationFrame(raf);
+  hideTimers.forEach(clearTimeout);hideTimers=[];clearTimeout(nextTimer);cancelAnimationFrame(raf);
   holes.forEach(h=>h.classList.remove('up','hit'));
-  active=-1;score=0;combo=0;scoreEl.textContent='0';comboEl.textContent='';timeEl.textContent='30.0';
+  active=[];score=0;combo=0;scoreEl.textContent='0';comboEl.textContent='';timeEl.textContent='30.0';
 }
 function start(){
   reset();running=true;overlay.classList.add('hidden');endAt=performance.now()+30000;scheduleNext();raf=requestAnimationFrame(tick);
 }
 function finish(){
   if(!running)return;
-  running=false;clearTimeout(hideTimer);clearTimeout(nextTimer);cancelAnimationFrame(raf);hideMole(true);timeEl.textContent='0.0';
-  best=Math.max(best,score);localStorage.setItem('mogura-best',best);
+  running=false;hideTimers.forEach(clearTimeout);hideTimers=[];clearTimeout(nextTimer);cancelAnimationFrame(raf);hideAll(true);timeEl.textContent='0.0';
+  hideAll(true);best=Math.max(best,score);localStorage.setItem('mogura-best',best);
   overlay.innerHTML='<div class="card"><h1>'+score+'匹！</h1><p>ベスト <strong>'+best+'匹</strong></p><button id="again">もう一回</button><a class="home" href="./">ミニゲームパックへ戻る</a></div>';
   overlay.classList.remove('hidden');document.getElementById('again').onclick=start;
 }
