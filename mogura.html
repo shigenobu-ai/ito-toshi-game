@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>モグラ叩き</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+html,body{margin:0;width:100%;min-height:100%;background:#102016;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}
+body{min-height:100dvh;padding:max(18px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));background:radial-gradient(circle at 50% 0,#284c31 0,#142a1b 45%,#0b1710 100%)}
+.wrap{width:min(560px,100%);margin:auto}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.title{font-size:24px;font-weight:1000;letter-spacing:.02em}
+.stats{display:flex;gap:8px}
+.stat{min-width:88px;text-align:center;background:#0007;border:1px solid #ffffff18;border-radius:16px;padding:8px 10px}
+.stat b{display:block;font-size:21px;font-variant-numeric:tabular-nums}
+.stat span{font-size:10px;color:#c7d8ca}
+.stage{margin-top:18px;background:linear-gradient(#6fb95c 0 22%,#4e8c45 22% 100%);border:1px solid #ffffff1a;border-radius:28px;padding:22px 16px 20px;box-shadow:0 16px 38px #0007;position:relative;overflow:hidden}
+.cloud{position:absolute;border-radius:999px;background:#ffffffc9;opacity:.75;filter:blur(.2px)}
+.c1{width:78px;height:25px;left:8%;top:7%}.c2{width:58px;height:20px;right:10%;top:12%}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 12px;margin-top:58px}
+.hole{position:relative;aspect-ratio:1.15/1;overflow:hidden}
+.dirt{position:absolute;left:7%;right:7%;bottom:2%;height:33%;background:#26160f;border-radius:50%;box-shadow:inset 0 8px 10px #0008,0 3px 0 #7b4a2a}
+.mole{position:absolute;left:50%;bottom:-72%;width:68%;height:82%;transform:translateX(-50%);transition:bottom .11s ease-out;cursor:pointer}
+.hole.up .mole{bottom:12%}
+.face{position:absolute;inset:0;border-radius:45% 45% 40% 40%;background:linear-gradient(#78502f,#4f2e1e);border:2px solid #2e1b13;box-shadow:inset 0 -7px 0 #3a2116}
+.ear{position:absolute;top:8%;width:28%;height:28%;background:#5d3b27;border:2px solid #2e1b13;border-radius:50%}
+.ear.l{left:-7%}.ear.r{right:-7%}
+.eye{position:absolute;top:35%;width:8%;height:10%;background:#111;border-radius:50%}.eye.l{left:29%}.eye.r{right:29%}
+.nose{position:absolute;left:50%;top:49%;width:22%;height:16%;transform:translateX(-50%);background:#1e1715;border-radius:50%}
+.tooth{position:absolute;top:61%;width:13%;height:18%;background:#fff;border-radius:2px}.tooth.l{left:37%;transform:rotate(4deg)}.tooth.r{right:37%;transform:rotate(-4deg)}
+.hole.hit .mole{transform:translateX(-50%) scale(.9)}
+.hole.hit .face{background:linear-gradient(#a66a3a,#6e3b22)}
+.pop{position:absolute;left:50%;top:8%;transform:translateX(-50%);font-size:22px;font-weight:1000;color:#ffe66f;text-shadow:0 2px 0 #7a3d00;pointer-events:none;animation:pop .42s ease-out forwards}
+@keyframes pop{to{transform:translate(-50%,-28px) scale(1.25);opacity:0}}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+button,.home{border:0;border-radius:16px;padding:14px;font-size:16px;font-weight:900;text-align:center;text-decoration:none}
+button{background:#fff;color:#102016}.home{background:#23372a;color:#fff}
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:#0d1710d9;backdrop-filter:blur(8px);z-index:10}
+.card{width:min(360px,100%);background:#1a2b20;border:1px solid #ffffff18;border-radius:26px;padding:26px;text-align:center;box-shadow:0 20px 50px #0008}
+.card h1{margin:0 0 8px;font-size:38px}
+.card p{color:#c9d6cc;line-height:1.7}
+.card button,.card .home{width:100%;display:block;margin-top:12px}
+.hidden{display:none}
+.combo{height:24px;text-align:center;margin-top:10px;font-size:14px;font-weight:900;color:#ffe66f}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <div class="title">🔨 モグラ叩き</div>
+    <div class="stats">
+      <div class="stat"><b id="score">0</b><span>スコア</span></div>
+      <div class="stat"><b id="time">30.0</b><span>残り秒</span></div>
+    </div>
+  </div>
+  <div class="combo" id="combo"></div>
+  <section class="stage">
+    <div class="cloud c1"></div><div class="cloud c2"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+  <div class="bottom">
+    <button id="restart">やり直す</button>
+    <a class="home" href="./">メインへ戻る</a>
+  </div>
+</main>
+
+<div id="overlay" class="overlay">
+  <div class="card">
+    <h1>モグラ叩き</h1>
+    <p>出てきたモグラをタップ！<br><strong>30秒で何匹叩けるか</strong>挑戦。</p>
+    <button id="start">スタート</button>
+    <a class="home" href="./">ミニゲームパックへ戻る</a>
+  </div>
+</div>
+
+<script>
+(()=>{
+const grid=document.getElementById('grid'),scoreEl=document.getElementById('score'),timeEl=document.getElementById('time'),comboEl=document.getElementById('combo'),overlay=document.getElementById('overlay');
+let running=false,score=0,combo=0,best=Number(localStorage.getItem('mogura-best')||0),active=-1,hideTimer=0,nextTimer=0,endAt=0,raf=0;
+const holes=[];
+for(let i=0;i<9;i++){
+  const hole=document.createElement('div');
+  hole.className='hole';
+  hole.innerHTML='<div class="mole"><div class="ear l"></div><div class="ear r"></div><div class="face"><div class="eye l"></div><div class="eye r"></div><div class="nose"></div><div class="tooth l"></div><div class="tooth r"></div></div></div><div class="dirt"></div>';
+  hole.addEventListener('pointerdown',e=>{e.preventDefault();hit(i,hole)});
+  grid.appendChild(hole);holes.push(hole);
+}
+function showMole(){
+  if(!running)return;
+  if(active>=0)hideMole(false);
+  let idx;
+  do{idx=Math.floor(Math.random()*holes.length)}while(idx===active&&holes.length>1);
+  active=idx;holes[idx].classList.add('up');
+  const elapsed=30000-Math.max(0,endAt-performance.now());
+  const visible=Math.max(360,760-elapsed/70);
+  hideTimer=setTimeout(()=>{hideMole(false);scheduleNext()},visible);
+}
+function hideMole(wasHit){
+  clearTimeout(hideTimer);
+  if(active>=0){
+    const h=holes[active];h.classList.remove('up','hit');
+    if(!wasHit&&running){combo=0;comboEl.textContent=''}
+  }
+  active=-1;
+}
+function scheduleNext(){
+  if(!running)return;
+  clearTimeout(nextTimer);
+  const elapsed=30000-Math.max(0,endAt-performance.now());
+  const delay=Math.max(120,360-elapsed/130);
+  nextTimer=setTimeout(showMole,delay+Math.random()*150);
+}
+function hit(i,hole){
+  if(!running||i!==active||!hole.classList.contains('up')||hole.classList.contains('hit'))return;
+  hole.classList.add('hit');
+  score++;combo++;
+  scoreEl.textContent=score;
+  comboEl.textContent=combo>=3?combo+' COMBO!':'';
+  const p=document.createElement('div');p.className='pop';p.textContent='+1';hole.appendChild(p);setTimeout(()=>p.remove(),450);
+  navigator.vibrate?.(12);
+  hideMole(true);setTimeout(scheduleNext,80);
+}
+function tick(t){
+  if(!running)return;
+  const remain=Math.max(0,endAt-t);
+  timeEl.textContent=(remain/1000).toFixed(1);
+  if(remain<=0){finish();return}
+  raf=requestAnimationFrame(tick);
+}
+function reset(){
+  clearTimeout(hideTimer);clearTimeout(nextTimer);cancelAnimationFrame(raf);
+  holes.forEach(h=>h.classList.remove('up','hit'));
+  active=-1;score=0;combo=0;scoreEl.textContent='0';comboEl.textContent='';timeEl.textContent='30.0';
+}
+function start(){
+  reset();running=true;overlay.classList.add('hidden');endAt=performance.now()+30000;scheduleNext();raf=requestAnimationFrame(tick);
+}
+function finish(){
+  if(!running)return;
+  running=false;clearTimeout(hideTimer);clearTimeout(nextTimer);cancelAnimationFrame(raf);hideMole(true);timeEl.textContent='0.0';
+  best=Math.max(best,score);localStorage.setItem('mogura-best',best);
+  overlay.innerHTML='<div class="card"><h1>'+score+'匹！</h1><p>ベスト <strong>'+best+'匹</strong></p><button id="again">もう一回</button><a class="home" href="./">ミニゲームパックへ戻る</a></div>';
+  overlay.classList.remove('hidden');document.getElementById('again').onclick=start;
+}
+document.getElementById('start').onclick=start;
+document.getElementById('restart').onclick=start;
+})();
+</script>
+</body>
+</html>
