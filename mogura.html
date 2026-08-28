@@ -97,7 +97,7 @@ function showMoles(){
   for(let n=0;n<count&&choices.length;n++){
     const pick=Math.floor(Math.random()*choices.length),idx=choices.splice(pick,1)[0];
     active.push(idx);holes[idx].classList.add('up');
-    const visible=Math.max(340,780-elapsed/75)+Math.random()*220;
+    const minVisible=Math.max(300,620-elapsed/95),maxVisible=Math.max(700,1250-elapsed/130);const visible=minVisible+Math.random()*(maxVisible-minVisible);
     const tm=setTimeout(()=>{hideOne(idx,false);if(active.length===0)scheduleNext()},visible);
     hideTimers.push(tm);
   }
