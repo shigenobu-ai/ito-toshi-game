@@ -48,7 +48,7 @@ body{height:100svh;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(sa
 .label,.time span,.instruction span{color:#fff;text-shadow:0 2px 5px #000,0 0 3px #000}
 .title,.time b,.instruction strong,.bottom button,.home{text-shadow:0 2px 6px #000,0 0 4px #000}
 .bar{border:0;background:#0006}
-.action{background:#17152d99;color:#fff;border:2px solid #ffffffcc;box-shadow:0 4px 14px #0005;text-shadow:0 2px 6px #000,0 0 4px #000}
+.action{background:#17152dcc!important;color:#fff!important;border:2px solid #fff!important;box-shadow:0 4px 14px #0007!important;text-shadow:0 2px 6px #000,0 0 4px #000!important}
 .action:active{transform:translateY(2px);box-shadow:none}
 </style><script src="./yuzu-wakeup-assets.js"></script></head><body>
 <main class="wrap"><div class="top"><div class="title">⏰ ゆずちゃんウェイクアップ</div><div class="time"><b id="time">30.0</b><span>残り秒</span></div></div>
@@ -84,7 +84,7 @@ function render(){sleep=Math.max(0,Math.min(100,sleep));fill.style.width=sleep+'
 function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='白い線が黄色の真ん中に来たら離す';action.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';action.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
 function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){finish(true);return}setTimeout(next,350)}
 function fail(kind='normal'){const penalty=kind==='shake'?20:7;sleep+=penalty;say(kind==='shake'?'もう！💢':'まだ寝る…');render();setTimeout(next,420)}
-function tap(){if(!running||step%3===0)return;const now=performance.now();if(now-lastTap<260){lastTap=now;fail();return}lastTap=now;success(10+Math.random()*7)}
+function tap(){if(!running||step%3===0)return;const now=performance.now();if(now-lastTap<260){lastTap=now;fail();return}lastTap=now;success(5)}
 action.addEventListener('pointerdown',e=>{e.preventDefault();if(!running)return;if(step%3===0){holding=true;holdStart=performance.now();meterFill.style.left='0%';yuzu.classList.add('shaking')}else tap()});
 action.addEventListener('pointerup',e=>{e.preventDefault();if(!running||!holding)return;holding=false;yuzu.classList.remove('shaking');const d=performance.now()-holdStart,p=Math.min(100,d/13);meterFill.style.left=p+'%';if(d>=800&&d<=1000)success(5);else fail('shake')});
 action.addEventListener('pointercancel',()=>{holding=false;yuzu.classList.remove('shaking')});
