@@ -82,7 +82,7 @@ function drawYuzu(idx){
   yuzu.width=sw;yuzu.height=sh;
   const ctx=yuzu.getContext('2d');ctx.clearRect(0,0,sw,sh);ctx.drawImage(off,0,0);
 }
-function render(){sleep=Math.max(0,Math.min(100,sleep));fill.style.width=sleep+'%';sleepText.textContent=Math.round(sleep)+'%';drawYuzu(sleep>70?0:sleep>42?1:sleep>18?2:3)}
+function render(){sleep=Math.max(0,Math.min(100,sleep));fill.style.width=sleep+'%';sleepText.textContent=Math.round(sleep)+'%';drawYuzu(sleep>70?0:sleep>35?1:sleep>5?2:3)}
 function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='白い線が黄色の真ん中に来たら離す';actionLabel.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';actionLabel.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
 function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){finish(true);return}setTimeout(next,350)}
 function fail(kind='normal'){const penalty=kind==='shake'?20:7;sleep+=penalty;say(kind==='shake'?'もう！💢':'まだ寝る…');render();setTimeout(next,420)}
