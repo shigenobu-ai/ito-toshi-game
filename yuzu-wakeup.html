@@ -29,7 +29,11 @@ body{height:100svh;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(sa
 .instruction{text-align:center;min-height:42px;display:flex;flex-direction:column;justify-content:center}.instruction strong{display:block;font-size:19px}.instruction span{font-size:11px;color:#c8c5db}
 .action{width:100%;height:58px;border:0;border-radius:18px;background:#fff;color:#17152d;font-size:20px;font-weight:1000;box-shadow:0 5px 0 #aaa2c8}
 .action:active{transform:translateY(3px);box-shadow:0 2px 0 #aaa2c8}
-.meter{height:14px;background:linear-gradient(90deg,#72e5b0 0 58%,#ffe66d 58% 78%,#ff6b8b 78% 100%);border-radius:99px;overflow:visible;margin:4px 0 2px;display:none;position:relative;box-shadow:0 2px 6px #0007}.meter.show{display:block}.meterFill{position:absolute;top:-4px;bottom:-4px;left:0;width:5px!important;background:#fff;border-radius:99px;box-shadow:0 0 0 2px #0009,0 0 8px #fff;transform:translateX(-50%);transition:left .02s linear}
+.meter{height:16px;background:#17152dcc;border-radius:99px;overflow:visible;margin:6px 0 4px;display:none;position:relative;box-shadow:0 2px 6px #0007}
+.meter.show{display:block}
+.meter:before{content:"";position:absolute;left:58%;width:20%;top:0;bottom:0;background:#ffe66d;border-radius:99px}
+.meter:after{content:"ここ！";position:absolute;left:68%;top:-22px;transform:translateX(-50%);font-size:11px;font-weight:1000;color:#ffe66d;text-shadow:0 2px 4px #000}
+.meterFill{position:absolute;top:-4px;bottom:-4px;left:0;width:5px!important;background:#fff;border-radius:99px;box-shadow:0 0 0 2px #0009,0 0 8px #fff;transform:translateX(-50%);transition:left .02s linear}
 .bottom{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}.bottom button,.home{padding:9px;border:0;border-radius:13px;font-weight:900;text-align:center;text-decoration:none;font-size:13px}
 .bottom button{background:#292642;color:#fff}.home{background:#292642;color:#fff}
 .overlay{position:fixed;inset:0;background:#0b0a15dc;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}
@@ -77,7 +81,7 @@ function drawYuzu(idx){
   const ctx=yuzu.getContext('2d');ctx.clearRect(0,0,sw,sh);ctx.drawImage(off,0,0);
 }
 function render(){sleep=Math.max(0,Math.min(100,sleep));fill.style.width=sleep+'%';sleepText.textContent=Math.round(sleep)+'%';drawYuzu(sleep>70?0:sleep>42?1:sleep>18?2:3)}
-function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='長押しして、黄色あたりで離す';action.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';action.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
+function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='白い線が黄色のゾーンに入ったら離す';action.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';action.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
 function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){finish(true);return}setTimeout(next,350)}
 function fail(){sleep+=5;say('まだ寝る…');render();setTimeout(next,350)}
 function tap(){if(!running||step%3===0)return;const now=performance.now();if(now-lastTap<260){lastTap=now;fail();return}lastTap=now;success(10+Math.random()*7)}
