@@ -84,7 +84,7 @@ function drawYuzu(idx){
 }
 function render(){sleep=Math.max(0,Math.min(100,sleep));fill.style.width=sleep+'%';sleepText.textContent=Math.round(sleep)+'%';drawYuzu(sleep>70?0:sleep>35?1:sleep>5?2:3)}
 function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='白い線が黄色の真ん中に来たら離す';actionLabel.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';actionLabel.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
-function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){finish(true);return}setTimeout(next,350)}
+function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){fill.style.width='0%';sleepText.textContent='0%';requestAnimationFrame(()=>requestAnimationFrame(()=>setTimeout(()=>finish(true),260)));return}setTimeout(next,350)}
 function fail(kind='normal'){const penalty=kind==='shake'?20:7;sleep+=penalty;say(kind==='shake'?'もう！💢':'まだ寝る…');render();setTimeout(next,420)}
 function tap(){if(!running||step%3===0)return;const now=performance.now();if(now-lastTap<260){lastTap=now;fail();return}lastTap=now;success(5)}
 action.addEventListener('pointerdown',e=>{e.preventDefault();if(!running)return;if(step%3===0){holding=true;holdStart=performance.now();meterFill.style.left='0%';yuzu.classList.add('shaking')}else tap()});
