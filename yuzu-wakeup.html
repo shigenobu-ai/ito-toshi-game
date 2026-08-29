@@ -29,6 +29,15 @@ body{height:100svh;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(sa
 .card h1{font-size:27px;margin:0 0 8px}.card p{line-height:1.65;color:#cbc8dc;margin:8px 0}.card button,.card .home{display:block;width:100%;padding:13px;margin-top:10px;border:0;border-radius:15px;font-size:16px;font-weight:1000;text-decoration:none}
 .card button{background:#fff;color:#17152d}.card .home{background:#302d4b;color:#fff}.hidden{display:none}
 @media (max-height:700px){.panel{padding:8px 10px}.instruction{min-height:34px}.instruction strong{font-size:17px}.action{height:52px}.bottom button,.home{padding:7px}.time{padding:4px 9px}.title{font-size:16px}}
+
+/* 写真背景を見せるため、文字/UIの囲み枠と面を撤去 */
+.time,.panel,.instruction,.bottom button,.home{background:transparent!important;border:0!important;box-shadow:none!important}
+.time{padding:4px 6px}.panel{padding:6px 4px}
+.label,.time span,.instruction span{color:#fff;text-shadow:0 2px 5px #000,0 0 3px #000}
+.title,.time b,.instruction strong,.bottom button,.home{text-shadow:0 2px 6px #000,0 0 4px #000}
+.bar{border:0;background:#0006}
+.action{background:transparent;color:#fff;border:0;box-shadow:none;text-shadow:0 2px 6px #000,0 0 4px #000}
+.action:active{transform:translateY(2px);box-shadow:none}
 </style><script src="./yuzu-wakeup-assets.js"></script></head><body>
 <main class="wrap"><div class="top"><div class="title">⏰ ゆずちゃんウェイクアップ</div><div class="time"><b id="time">30.0</b><span>残り秒</span></div></div>
 <div class="panel"><div class="label"><span>ねむねむゲージ</span><b id="sleepText">100%</b></div><div class="bar"><div id="fill" class="fill"></div></div></div>
