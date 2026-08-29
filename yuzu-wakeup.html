@@ -13,7 +13,15 @@ body{height:100svh;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(sa
 .label{display:flex;justify-content:space-between;font-size:11px;color:#c9c7df}.bar{height:12px;background:#0e0d1b;border-radius:999px;overflow:hidden;margin-top:5px;border:1px solid #ffffff18}
 .fill{height:100%;width:100%;background:linear-gradient(90deg,#7c6cff,#e184ff);transition:width .22s}
 .room{min-height:0;position:relative;overflow:hidden;border:0;background:transparent;box-shadow:none}
-.yuzuPhoto{position:absolute;left:50%;top:50%;width:min(82%,420px);height:82%;transform:translate(-50%,-50%);display:block;object-fit:contain;filter:none;background:none!important}
+.yuzuPhoto{position:absolute;left:50%;top:50%;width:min(82%,420px);height:82%;transform:translate(-50%,-50%);display:block;object-fit:contain;filter:none;background:none!important;transform-origin:50% 70%}
+.yuzuPhoto.shaking{animation:yuzuShake .085s linear infinite}
+@keyframes yuzuShake{
+  0%{transform:translate(-50%,-50%) rotate(-1.8deg) translateX(-3px)}
+  25%{transform:translate(-50%,-50%) rotate(1.4deg) translateX(2px)}
+  50%{transform:translate(-50%,-50%) rotate(-1deg) translateY(2px)}
+  75%{transform:translate(-50%,-50%) rotate(1.8deg) translateX(3px)}
+  100%{transform:translate(-50%,-50%) rotate(-1.8deg) translateX(-3px)}
+}
 
 .wakeResult{display:block;width:min(260px,84%);max-height:42svh;object-fit:contain;margin:10px auto 4px;border-radius:16px}
 .bubble{position:absolute;right:8px;top:8px;background:#fff;color:#332c42;padding:7px 10px;border-radius:13px;font-size:12px;font-weight:800;max-width:150px;opacity:0;transition:.15s;z-index:2}
@@ -42,7 +50,7 @@ body{height:100svh;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(sa
 <main class="wrap"><div class="top"><div class="title">⏰ ゆずちゃんウェイクアップ</div><div class="time"><b id="time">30.0</b><span>残り秒</span></div></div>
 <div class="panel"><div class="label"><span>ねむねむゲージ</span><b id="sleepText">100%</b></div><div class="bar"><div id="fill" class="fill"></div></div></div>
 <div class="room"><canvas id="yuzu" class="yuzuPhoto" aria-label="ゆずちゃん"></canvas><div id="bubble" class="bubble">あと5分…</div></div>
-<div class="instruction"><strong id="instruction">声をかけよう</strong><span id="hint">タイミングよくタップ</span></div><button id="action" class="action">起きて！</button><div id="meter" class="meter"><div id="meterFill" class="meterFill"></div></div>
+<div class="instruction"><strong id="instruction">声をかけよう</strong><span id="hint">タイミングよくタップ</span></div><div id="meter" class="meter"><div id="meterFill" class="meterFill"></div></div><button id="action" class="action">起きて！</button>
 <div class="bottom"><button id="restart">やり直す</button><a class="home" href="./">メインへ戻る</a></div></main>
 <div id="overlay" class="overlay"><div class="card"><h1>ゆずちゃんウェイクアップ</h1><p>寝起きの悪いゆずちゃんを30秒以内に起こそう。<br><strong>タップと長押し</strong>を使い分けます。<br>焦って連打すると、また寝ます。</p><button id="start">スタート</button><a class="home" href="./">ミニゲームパックへ戻る</a></div></div>
 <script>
@@ -73,11 +81,11 @@ function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textCo
 function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){finish(true);return}setTimeout(next,350)}
 function fail(){sleep+=5;say('まだ寝る…');render();setTimeout(next,350)}
 function tap(){if(!running||step%3===0)return;const now=performance.now();if(now-lastTap<260){lastTap=now;fail();return}lastTap=now;success(10+Math.random()*7)}
-action.addEventListener('pointerdown',e=>{e.preventDefault();if(!running)return;if(step%3===0){holding=true;holdStart=performance.now();meterFill.style.width='0%'}else tap()});
-action.addEventListener('pointerup',e=>{e.preventDefault();if(!running||!holding)return;holding=false;const d=performance.now()-holdStart,p=Math.min(100,d/13);meterFill.style.width=p+'%';if(d>=760&&d<=1050)success(18);else fail()});
-action.addEventListener('pointercancel',()=>holding=false);
+action.addEventListener('pointerdown',e=>{e.preventDefault();if(!running)return;if(step%3===0){holding=true;holdStart=performance.now();meterFill.style.width='0%';yuzu.classList.add('shaking')}else tap()});
+action.addEventListener('pointerup',e=>{e.preventDefault();if(!running||!holding)return;holding=false;yuzu.classList.remove('shaking');const d=performance.now()-holdStart,p=Math.min(100,d/13);meterFill.style.width=p+'%';if(d>=760&&d<=1050)success(18);else fail()});
+action.addEventListener('pointercancel',()=>{holding=false;yuzu.classList.remove('shaking')});
 function tick(t){if(!running)return;const rem=Math.max(0,endAt-t);time.textContent=(rem/1000).toFixed(1);if(holding){meterFill.style.width=Math.min(100,(t-holdStart)/13)+'%'}if(rem<=0){finish(false);return}raf=requestAnimationFrame(tick)}
-function start(){cancelAnimationFrame(raf);running=true;sleep=100;step=0;holding=false;time.textContent='30.0';overlay.classList.add('hidden');render();next();endAt=performance.now()+30000;raf=requestAnimationFrame(tick)}
+function start(){cancelAnimationFrame(raf);running=true;sleep=100;step=0;holding=false;yuzu.classList.remove('shaking');time.textContent='30.0';overlay.classList.add('hidden');render();next();endAt=performance.now()+30000;raf=requestAnimationFrame(tick)}
 function finish(win){if(!running)return;running=false;cancelAnimationFrame(raf);const elapsed=((30000-Math.max(0,endAt-performance.now()))/1000).toFixed(1);if(win){best=best?Math.min(best,Number(elapsed)):Number(elapsed);localStorage.setItem('yuzu-best',best)}overlay.innerHTML='<div class="card"><h1>'+(win?'ゆずちゃん、起床。':'二度寝しました')+'</h1>'+(win?'<img class="wakeResult" src="'+(assets.wakeResult||'./B89EE4D0-FA7F-4222-950E-193DA12C67F3.png')+'" alt="なんとか起きたゆずちゃん">':'')+'<p>'+(win?'起床まで <strong>'+elapsed+'秒</strong><br>ベスト '+best.toFixed(1)+'秒':'ねむねむゲージ '+Math.round(sleep)+'%')+'</p><button id="again">もう一回</button><a class="home" href="./">ミニゲームパックへ戻る</a></div>';overlay.classList.remove('hidden');$('again').onclick=start}
 $('start').onclick=start;$('restart').onclick=start;render();
 })();
