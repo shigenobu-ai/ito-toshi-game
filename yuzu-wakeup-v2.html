@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>ゆずちゃんウェイクアップ</title>
+<style>
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;background:#151329;color:#fff}
+body{height:100svh;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(safe-area-inset-bottom));background:#151329 var(--yuzu-bg-image,none) center/cover fixed no-repeat;position:relative}body:before{content:"";position:fixed;inset:0;background:linear-gradient(#17152d12,#0d0c181c);pointer-events:none;z-index:0}.wrap,.overlay{position:relative;z-index:1}
+.wrap{width:min(560px,100%);height:100%;margin:auto;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto auto;gap:8px}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:center;min-width:0}
+.title{font-size:clamp(17px,5.1vw,23px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.time{flex:0 0 auto;background:#0007;border:1px solid #ffffff1c;border-radius:14px;padding:6px 11px;text-align:center;min-width:78px}
+.time b{font-size:20px;display:block}.time span{font-size:9px;color:#bbb9d3}
+.panel{margin:0;background:#211f3b;border:1px solid #ffffff18;border-radius:18px;padding:10px 12px;box-shadow:0 10px 24px #0005}
+.label{display:flex;justify-content:space-between;font-size:11px;color:#c9c7df}.bar{height:12px;background:#0e0d1b;border-radius:999px;overflow:hidden;margin-top:5px;border:1px solid #ffffff18}
+.fill{height:100%;width:100%;background:linear-gradient(90deg,#7c6cff,#e184ff);transition:width .22s}
+.room{min-height:0;position:relative;overflow:hidden;border:0;background:transparent;box-shadow:none}
+.yuzuPhoto{position:absolute;left:50%;top:50%;width:min(82%,420px);height:82%;transform:translate(-50%,-50%);display:block;object-fit:contain;filter:none;background:none!important;transform-origin:50% 70%}
+.yuzuPhoto.shaking{animation:yuzuShake .085s linear infinite}
+@keyframes yuzuShake{
+  0%{transform:translate(-50%,-50%) rotate(-1.8deg) translateX(-3px)}
+  25%{transform:translate(-50%,-50%) rotate(1.4deg) translateX(2px)}
+  50%{transform:translate(-50%,-50%) rotate(-1deg) translateY(2px)}
+  75%{transform:translate(-50%,-50%) rotate(1.8deg) translateX(3px)}
+  100%{transform:translate(-50%,-50%) rotate(-1.8deg) translateX(-3px)}
+}
+
+.wakeResult{display:block;width:min(260px,84%);max-height:42svh;object-fit:contain;margin:10px auto 4px;border-radius:16px}
+.bubble{position:absolute;right:8px;top:8px;background:#fff;color:#332c42;padding:7px 10px;border-radius:13px;font-size:12px;font-weight:800;max-width:150px;opacity:0;transition:.15s;z-index:2}
+.bubble.show{opacity:1}.bubble:after{content:"";position:absolute;right:18px;bottom:-7px;border:8px solid transparent;border-top-color:#fff;border-bottom:0}
+.instruction{text-align:center;min-height:42px;display:flex;flex-direction:column;justify-content:center}.instruction strong{display:block;font-size:19px}.instruction span{font-size:11px;color:#c8c5db}
+.action{width:100%;height:58px;border:0;border-radius:18px;background:#fff;color:#17152d;font-size:20px;font-weight:1000;box-shadow:0 5px 0 #aaa2c8}
+.action:active{transform:translateY(3px);box-shadow:0 2px 0 #aaa2c8}
+.meter{height:9px;background:#0c0b17;border-radius:99px;overflow:hidden;margin-top:0;display:none}.meter.show{display:block}.meterFill{height:100%;width:0;background:linear-gradient(90deg,#72e5b0 0 58%,#ffe66d 58% 78%,#ff6b8b 78%)}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0}.bottom button,.home{padding:9px;border:0;border-radius:13px;font-weight:900;text-align:center;text-decoration:none;font-size:13px}
+.bottom button{background:#292642;color:#fff}.home{background:#292642;color:#fff}
+.overlay{position:fixed;inset:0;background:#0b0a15dc;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}
+.card{width:min(370px,100%);max-height:92svh;overflow:auto;padding:22px;background:#211f3b;border:1px solid #ffffff1c;border-radius:24px;text-align:center}
+.card h1{font-size:27px;margin:0 0 8px}.card p{line-height:1.65;color:#cbc8dc;margin:8px 0}.card button,.card .home{display:block;width:100%;padding:13px;margin-top:10px;border:0;border-radius:15px;font-size:16px;font-weight:1000;text-decoration:none}
+.card button{background:#fff;color:#17152d}.card .home{background:#302d4b;color:#fff}.hidden{display:none}
+@media (max-height:700px){.panel{padding:8px 10px}.instruction{min-height:34px}.instruction strong{font-size:17px}.action{height:52px}.bottom button,.home{padding:7px}.time{padding:4px 9px}.title{font-size:16px}}
+
+/* 写真背景を見せるため、文字/UIの囲み枠と面を撤去 */
+.time,.panel,.instruction,.bottom button,.home{background:transparent!important;border:0!important;box-shadow:none!important}
+.time{padding:4px 6px}.panel{padding:6px 4px}
+.label,.time span,.instruction span{color:#fff;text-shadow:0 2px 5px #000,0 0 3px #000}
+.title,.time b,.instruction strong,.bottom button,.home{text-shadow:0 2px 6px #000,0 0 4px #000}
+.bar{border:0;background:#0006}
+.action{background:transparent;color:#fff;border:0;box-shadow:none;text-shadow:0 2px 6px #000,0 0 4px #000}
+.action:active{transform:translateY(2px);box-shadow:none}
+</style><script src="./yuzu-wakeup-assets.js"></script></head><body>
+<main class="wrap"><div class="top"><div class="title">⏰ ゆずちゃんウェイクアップ</div><div class="time"><b id="time">30.0</b><span>残り秒</span></div></div>
+<div class="panel"><div class="label"><span>ねむねむゲージ</span><b id="sleepText">100%</b></div><div class="bar"><div id="fill" class="fill"></div></div></div>
+<div class="room"><canvas id="yuzu" class="yuzuPhoto" aria-label="ゆずちゃん"></canvas><div id="bubble" class="bubble">あと5分…</div></div>
+<div class="instruction"><strong id="instruction">声をかけよう</strong><span id="hint">タイミングよくタップ</span></div><div id="meter" class="meter"><div id="meterFill" class="meterFill"></div></div><button id="action" class="action">起きて！</button>
+<div class="bottom"><button id="restart">やり直す</button><a class="home" href="./">メインへ戻る</a></div></main>
+<div id="overlay" class="overlay"><div class="card"><h1>ゆずちゃんウェイクアップ</h1><p>寝起きの悪いゆずちゃんを30秒以内に起こそう。<br><strong>タップと長押し</strong>を使い分けます。<br>焦って連打すると、また寝ます。</p><button id="start">スタート</button><a class="home" href="./">ミニゲームパックへ戻る</a></div></div>
+<script>
+(()=>{const assets=window.YUZU_WAKEUP_ASSETS||{};document.documentElement.style.setProperty('--yuzu-bg-image',assets.background?'url("'+assets.background+'")':'none');const $=id=>document.getElementById(id),time=$('time'),fill=$('fill'),sleepText=$('sleepText'),inst=$('instruction'),hint=$('hint'),action=$('action'),meter=$('meter'),meterFill=$('meterFill'),yuzu=$('yuzu'),bubble=$('bubble'),overlay=$('overlay');
+let running=false,sleep=100,endAt=0,raf=0,step=0,holding=false,holdStart=0,lastTap=0,best=Number(localStorage.getItem('yuzu-best')||0);
+const lines=['あと5分…','起きてるって…','……寝てない','今日は休みでしょ…','んー……'];
+function say(t){bubble.textContent=t;bubble.classList.add('show');setTimeout(()=>bubble.classList.remove('show'),850)}
+const sprite=new Image(),spriteCells=[[0,0],[1,0],[2,0],[2,1]];let spriteReady=false;
+sprite.onload=()=>{spriteReady=true;render()};sprite.src=assets.spriteSheet||'./assets/973820A9-91C1-4C8E-A8CB-327579CD3400.png';
+function drawYuzu(idx){
+  if(!spriteReady)return;
+  const sw=Math.floor(sprite.naturalWidth/4),sh=Math.floor(sprite.naturalHeight/2);
+  const [cx,cy]=spriteCells[idx];
+  const off=document.createElement('canvas');off.width=sw;off.height=sh;
+  const ox=off.getContext('2d',{willReadFrequently:true});
+  ox.drawImage(sprite,cx*sw,cy*sh,sw,sh,0,0,sw,sh);
+  const im=ox.getImageData(0,0,sw,sh),d=im.data,seen=new Uint8Array(sw*sh),q=[];
+  const bg=p=>{const i=p*4,r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];const mx=Math.max(r,g,b),mn=Math.min(r,g,b);return a<10||(mn>224&&mx-mn<18)};
+  const push=(x,y)=>{if(x<0||y<0||x>=sw||y>=sh)return;const p=y*sw+x;if(seen[p]||!bg(p))return;seen[p]=1;q.push(p)};
+  for(let x=0;x<sw;x++){push(x,0);push(x,sh-1)}for(let y=0;y<sh;y++){push(0,y);push(sw-1,y)}
+  for(let n=0;n<q.length;n++){const p=q[n],x=p%sw,y=(p/sw)|0,i=p*4;d[i+3]=0;push(x+1,y);push(x-1,y);push(x,y+1);push(x,y-1)}
+  ox.putImageData(im,0,0);
+  yuzu.width=sw;yuzu.height=sh;
+  const ctx=yuzu.getContext('2d');ctx.clearRect(0,0,sw,sh);ctx.drawImage(off,0,0);
+}
+function render(){sleep=Math.max(0,Math.min(100,sleep));fill.style.width=sleep+'%';sleepText.textContent=Math.round(sleep)+'%';drawYuzu(sleep>70?0:sleep>42?1:sleep>18?2:3)}
+function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='長押しして、黄色あたりで離す';action.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';action.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
+function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){finish(true);return}setTimeout(next,350)}
+function fail(){sleep+=5;say('まだ寝る…');render();setTimeout(next,350)}
+function tap(){if(!running||step%3===0)return;const now=performance.now();if(now-lastTap<260){lastTap=now;fail();return}lastTap=now;success(10+Math.random()*7)}
+action.addEventListener('pointerdown',e=>{e.preventDefault();if(!running)return;if(step%3===0){holding=true;holdStart=performance.now();meterFill.style.width='0%';yuzu.classList.add('shaking')}else tap()});
+action.addEventListener('pointerup',e=>{e.preventDefault();if(!running||!holding)return;holding=false;yuzu.classList.remove('shaking');const d=performance.now()-holdStart,p=Math.min(100,d/13);meterFill.style.width=p+'%';if(d>=760&&d<=1050)success(18);else fail()});
+action.addEventListener('pointercancel',()=>{holding=false;yuzu.classList.remove('shaking')});
+function tick(t){if(!running)return;const rem=Math.max(0,endAt-t);time.textContent=(rem/1000).toFixed(1);if(holding){meterFill.style.width=Math.min(100,(t-holdStart)/13)+'%'}if(rem<=0){finish(false);return}raf=requestAnimationFrame(tick)}
+function start(){cancelAnimationFrame(raf);running=true;sleep=100;step=0;holding=false;yuzu.classList.remove('shaking');time.textContent='30.0';overlay.classList.add('hidden');render();next();endAt=performance.now()+30000;raf=requestAnimationFrame(tick)}
+function finish(win){if(!running)return;running=false;cancelAnimationFrame(raf);const elapsed=((30000-Math.max(0,endAt-performance.now()))/1000).toFixed(1);if(win){best=best?Math.min(best,Number(elapsed)):Number(elapsed);localStorage.setItem('yuzu-best',best)}overlay.innerHTML='<div class="card"><h1>'+(win?'ゆずちゃん、起床。':'二度寝しました')+'</h1>'+(win?'<img class="wakeResult" src="'+(assets.wakeResult||'./B89EE4D0-FA7F-4222-950E-193DA12C67F3.png')+'" alt="なんとか起きたゆずちゃん">':'')+'<p>'+(win?'起床まで <strong>'+elapsed+'秒</strong><br>ベスト '+best.toFixed(1)+'秒':'ねむねむゲージ '+Math.round(sleep)+'%')+'</p><button id="again">もう一回</button><a class="home" href="./">ミニゲームパックへ戻る</a></div>';overlay.classList.remove('hidden');$('again').onclick=start}
+$('start').onclick=start;$('restart').onclick=start;render();
+})();
+</script></body></html>
