@@ -48,17 +48,19 @@ body{height:100svh;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(sa
 .label,.time span,.instruction span{color:#fff;text-shadow:0 2px 5px #000,0 0 3px #000}
 .title,.time b,.instruction strong,.bottom button,.home{text-shadow:0 2px 6px #000,0 0 4px #000}
 .bar{border:0;background:#0006}
-.action{background:#17152dcc!important;color:#fff!important;border:2px solid #fff!important;box-shadow:0 4px 14px #0007!important;text-shadow:0 2px 6px #000,0 0 4px #000!important}
+.action{background:transparent!important;color:#fff!important;border:0!important;box-shadow:none!important;text-shadow:none!important}
+.actionLabel{display:inline-block;padding:10px 22px;border:2px solid #fff;border-radius:14px;background:#17152dcc;color:#fff;font-weight:1000;line-height:1;text-shadow:0 2px 5px #000;box-shadow:0 4px 12px #0006}
+.action:active .actionLabel{transform:translateY(2px);box-shadow:0 2px 6px #0006}
 .action:active{transform:translateY(2px);box-shadow:none}
 </style><script src="./yuzu-wakeup-assets.js"></script></head><body>
 <main class="wrap"><div class="top"><div class="title">⏰ ゆずちゃんウェイクアップ</div><div class="time"><b id="time">30.0</b><span>残り秒</span></div></div>
 <div class="panel"><div class="label"><span>ねむねむゲージ</span><b id="sleepText">100%</b></div><div class="bar"><div id="fill" class="fill"></div></div></div>
 <div class="room"><canvas id="yuzu" class="yuzuPhoto" aria-label="ゆずちゃん"></canvas><div id="bubble" class="bubble">あと5分…</div></div>
-<div class="instruction"><strong id="instruction">声をかけよう</strong><span id="hint">タイミングよくタップ</span></div><div id="meter" class="meter"><div id="meterFill" class="meterFill"></div></div><button id="action" class="action">起きて！</button>
+<div class="instruction"><strong id="instruction">声をかけよう</strong><span id="hint">タイミングよくタップ</span></div><div id="meter" class="meter"><div id="meterFill" class="meterFill"></div></div><button id="action" class="action"><span id="actionLabel" class="actionLabel">起きて！</span></button>
 <div class="bottom"><button id="restart">やり直す</button><a class="home" href="./">メインへ戻る</a></div></main>
 <div id="overlay" class="overlay"><div class="card"><h1>ゆずちゃんウェイクアップ</h1><p>寝起きの悪いゆずちゃんを30秒以内に起こそう。<br><strong>タップと長押し</strong>を使い分けます。<br>焦って連打すると、また寝ます。</p><button id="start">スタート</button><a class="home" href="./">ミニゲームパックへ戻る</a></div></div>
 <script>
-(()=>{const assets=window.YUZU_WAKEUP_ASSETS||{};document.documentElement.style.setProperty('--yuzu-bg-image',assets.background?'url("'+assets.background+'")':'none');const $=id=>document.getElementById(id),time=$('time'),fill=$('fill'),sleepText=$('sleepText'),inst=$('instruction'),hint=$('hint'),action=$('action'),meter=$('meter'),meterFill=$('meterFill'),yuzu=$('yuzu'),bubble=$('bubble'),overlay=$('overlay');
+(()=>{const assets=window.YUZU_WAKEUP_ASSETS||{};document.documentElement.style.setProperty('--yuzu-bg-image',assets.background?'url("'+assets.background+'")':'none');const $=id=>document.getElementById(id),time=$('time'),fill=$('fill'),sleepText=$('sleepText'),inst=$('instruction'),hint=$('hint'),action=$('action'),actionLabel=$('actionLabel'),meter=$('meter'),meterFill=$('meterFill'),yuzu=$('yuzu'),bubble=$('bubble'),overlay=$('overlay');
 let running=false,sleep=100,endAt=0,raf=0,step=0,holding=false,holdStart=0,lastTap=0,best=Number(localStorage.getItem('yuzu-best')||0);
 const lines=['あと5分…','起きてるって…','……寝てない','今日は休みでしょ…','んー……'];
 function say(t){bubble.textContent=t;bubble.classList.add('show');setTimeout(()=>bubble.classList.remove('show'),850)}
@@ -81,7 +83,7 @@ function drawYuzu(idx){
   const ctx=yuzu.getContext('2d');ctx.clearRect(0,0,sw,sh);ctx.drawImage(off,0,0);
 }
 function render(){sleep=Math.max(0,Math.min(100,sleep));fill.style.width=sleep+'%';sleepText.textContent=Math.round(sleep)+'%';drawYuzu(sleep>70?0:sleep>42?1:sleep>18?2:3)}
-function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='白い線が黄色の真ん中に来たら離す';action.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';action.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
+function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='白い線が黄色の真ん中に来たら離す';actionLabel.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';actionLabel.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
 function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){finish(true);return}setTimeout(next,350)}
 function fail(kind='normal'){const penalty=kind==='shake'?20:7;sleep+=penalty;say(kind==='shake'?'もう！💢':'まだ寝る…');render();setTimeout(next,420)}
 function tap(){if(!running||step%3===0)return;const now=performance.now();if(now-lastTap<260){lastTap=now;fail();return}lastTap=now;success(5)}
