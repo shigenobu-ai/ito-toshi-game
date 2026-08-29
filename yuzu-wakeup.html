@@ -81,12 +81,12 @@ function drawYuzu(idx){
   const ctx=yuzu.getContext('2d');ctx.clearRect(0,0,sw,sh);ctx.drawImage(off,0,0);
 }
 function render(){sleep=Math.max(0,Math.min(100,sleep));fill.style.width=sleep+'%';sleepText.textContent=Math.round(sleep)+'%';drawYuzu(sleep>70?0:sleep>42?1:sleep>18?2:3)}
-function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='白い線が黄色のゾーンに入ったら離す';action.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';action.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
+function next(){step++;meter.classList.remove('show');if(step%3===0){inst.textContent='ゆさゆさする';hint.textContent='白い線が黄色の真ん中に来たら離す';action.textContent='長押し';meter.classList.add('show')}else{inst.textContent=step%2?'声をかけよう':'目覚まし！';hint.textContent='合図を見て1回だけタップ';action.textContent=step%2?'ゆず、起きて！':'ピピピピ！'}}
 function success(power){sleep-=power;say(sleep<=0?'起きた！':lines[Math.floor(Math.random()*lines.length)]);render();if(sleep<=0){finish(true);return}setTimeout(next,350)}
-function fail(){sleep+=5;say('まだ寝る…');render();setTimeout(next,350)}
+function fail(kind='normal'){const penalty=kind==='shake'?14:7;sleep+=penalty;say(kind==='shake'?'もう！💢':'まだ寝る…');render();setTimeout(next,420)}
 function tap(){if(!running||step%3===0)return;const now=performance.now();if(now-lastTap<260){lastTap=now;fail();return}lastTap=now;success(10+Math.random()*7)}
 action.addEventListener('pointerdown',e=>{e.preventDefault();if(!running)return;if(step%3===0){holding=true;holdStart=performance.now();meterFill.style.left='0%';yuzu.classList.add('shaking')}else tap()});
-action.addEventListener('pointerup',e=>{e.preventDefault();if(!running||!holding)return;holding=false;yuzu.classList.remove('shaking');const d=performance.now()-holdStart,p=Math.min(100,d/13);meterFill.style.left=p+'%';if(d>=760&&d<=1050)success(18);else fail()});
+action.addEventListener('pointerup',e=>{e.preventDefault();if(!running||!holding)return;holding=false;yuzu.classList.remove('shaking');const d=performance.now()-holdStart,p=Math.min(100,d/13);meterFill.style.left=p+'%';if(d>=800&&d<=1000)success(18);else fail('shake')});
 action.addEventListener('pointercancel',()=>{holding=false;yuzu.classList.remove('shaking')});
 function tick(t){if(!running)return;const rem=Math.max(0,endAt-t);time.textContent=(rem/1000).toFixed(1);if(holding){meterFill.style.left=Math.min(100,(t-holdStart)/13)+'%'}if(rem<=0){finish(false);return}raf=requestAnimationFrame(tick)}
 function start(){cancelAnimationFrame(raf);running=true;sleep=100;step=0;holding=false;yuzu.classList.remove('shaking');time.textContent='30.0';overlay.classList.add('hidden');render();next();endAt=performance.now()+30000;raf=requestAnimationFrame(tick)}
