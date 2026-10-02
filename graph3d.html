@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>3D関数グラフ</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#07101b;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif}
+body{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+#app{height:100%;display:flex;flex-direction:column}
+header{padding:10px 12px 8px;background:#0d1724eF;border-bottom:1px solid #ffffff18;z-index:3}
+.top{display:flex;align-items:center;gap:8px;margin-bottom:8px}.back{color:#dbe8f5;text-decoration:none;font-weight:800;font-size:14px;padding:8px 4px}.title{font-weight:1000;font-size:18px}
+.row{display:flex;gap:7px}.fx{display:flex;align-items:center;flex:1;min-width:0;background:#172638;border:1px solid #ffffff22;border-radius:13px;padding-left:10px}
+.fx span{font-weight:900;color:#80cfff;white-space:nowrap}.fx input{width:100%;min-width:0;background:transparent;border:0;outline:0;color:#fff;font-size:16px;padding:11px 8px}
+button{border:0;border-radius:13px;padding:0 15px;background:#1688e8;color:white;font-weight:900;font-size:14px}.examples{display:flex;gap:6px;overflow-x:auto;padding-top:7px;scrollbar-width:none}.examples::-webkit-scrollbar{display:none}.chip{flex:0 0 auto;background:#ffffff10;color:#d6e2ee;padding:7px 9px;border-radius:999px;font-size:11px;font-weight:700}
+#stage{position:relative;flex:1;min-height:0;touch-action:none}canvas{display:block;width:100%;height:100%}
+.hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:#07101bcc;border:1px solid #ffffff1d;border-radius:999px;padding:7px 11px;color:#c8d5e2;font-size:10px;white-space:nowrap;pointer-events:none}
+#error{position:absolute;left:12px;right:12px;top:12px;background:#9d2638e8;border-radius:12px;padding:10px 12px;font-size:12px;display:none;z-index:2}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"}}</script>
+</head>
+<body><div id="app">
+<header><div class="top"><a class="back" href="index.html">‹ 戻る</a><div class="title">📈 3D関数グラフ</div></div>
+<div class="row"><label class="fx"><span>z =</span><input id="formula" value="sin(x) * cos(y)" autocapitalize="off" autocomplete="off" spellcheck="false" enterkeyhint="go"></label><button id="draw">描画</button></div>
+<div class="examples"><span class="chip" data-f="sin(x) * cos(y)">波</span><span class="chip" data-f="(x^2 + y^2) / 8">放物面</span><span class="chip" data-f="sin(sqrt(x^2+y^2))">波紋</span><span class="chip" data-f="sin(x^2+y^2)">細かい波</span><span class="chip" data-f="cos(x) + sin(y)">交差波</span></div>
+</header>
+<div id="stage"><div id="error"></div><div class="hint">1本指：回転　ピンチ：拡大縮小　2本指：移動</div></div>
+</div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+const stage=document.getElementById('stage'), input=document.getElementById('formula'), errorBox=document.getElementById('error');
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x07101b);
+const camera=new THREE.PerspectiveCamera(45,1,.1,200); camera.position.set(13,11,13);
+const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); stage.prepend(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement); controls.enableDamping=true; controls.dampingFactor=.07; controls.target.set(0,0,0);
+controls.touches.ONE=THREE.TOUCH.ROTATE; controls.touches.TWO=THREE.TOUCH.DOLLY_PAN;
+scene.add(new THREE.HemisphereLight(0xddeeff,0x223344,2.2));
+const light=new THREE.DirectionalLight(0xffffff,2.2); light.position.set(6,10,8); scene.add(light);
+const grid=new THREE.GridHelper(20,20,0x5c7a99,0x26384b); scene.add(grid);
+const axes=new THREE.AxesHelper(6); scene.add(axes);
+let surface=null, wire=null;
+function compile(raw){
+ let s=raw.trim().replace(/π/gi,'PI').replace(/√/g,'sqrt').replace(/²/g,'^2').replace(/³/g,'^3');
+ s=s.replace(/\^/g,'**');
+ const allowed=/^[0-9xy+\-*/()., _a-zA-Z*]+$/;
+ if(!allowed.test(s)) throw new Error('使えない文字が含まれています');
+ const names=['sin','cos','tan','asin','acos','atan','sqrt','abs','exp','log','floor','ceil','round','min','max','pow','PI','E'];
+ for(const n of names) s=s.replace(new RegExp('\\b'+n+'\\b','g'),'Math.'+n);
+ if(/\b(?!x\b|y\b|Math\b)[A-Za-z_]\w*/.test(s.replace(/Math\.[A-Za-z]+/g,''))) throw new Error('未対応の関数または変数です');
+ return new Function('x','y','"use strict"; return ('+s+');');
+}
+function draw(){
+ try{
+  const fn=compile(input.value); errorBox.style.display='none';
+  if(surface){scene.remove(surface);surface.geometry.dispose();surface.material.dispose()}
+  if(wire){scene.remove(wire);wire.geometry.dispose();wire.material.dispose()}
+  const N=70,size=12,pos=[],idx=[];
+  for(let j=0;j<=N;j++) for(let i=0;i<=N;i++){
+   const x=-size/2+size*i/N, y=-size/2+size*j/N; let z=Number(fn(x,y));
+   if(!Number.isFinite(z)) z=0; z=Math.max(-8,Math.min(8,z));
+   pos.push(x,z,y);
+  }
+  for(let j=0;j<N;j++) for(let i=0;i<N;i++){const a=j*(N+1)+i,b=a+1,c=a+(N+1),d=c+1;idx.push(a,c,b,b,c,d)}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+  const colors=[]; const p=g.attributes.position;
+  for(let i=0;i<p.count;i++){const t=Math.max(0,Math.min(1,(p.getY(i)+5)/10));const c=new THREE.Color().setHSL(.58-t*.42,.82,.54);colors.push(c.r,c.g,c.b)}
+  g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+  surface=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,side:THREE.DoubleSide,roughness:.58,metalness:.05}));
+  scene.add(surface);
+  wire=new THREE.LineSegments(new THREE.WireframeGeometry(g),new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.13}));scene.add(wire);
+  input.blur();
+ }catch(e){errorBox.textContent='描画できません：'+e.message;errorBox.style.display='block'}
+}
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+new ResizeObserver(resize).observe(stage); resize();
+document.getElementById('draw').onclick=draw; input.addEventListener('keydown',e=>{if(e.key==='Enter')draw()});
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{input.value=c.dataset.f;draw()});
+draw();
+(function loop(){requestAnimationFrame(loop);controls.update();renderer.render(scene,camera)})();
+</script></body></html>
